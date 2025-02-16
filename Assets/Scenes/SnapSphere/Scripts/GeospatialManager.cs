@@ -5,6 +5,8 @@ using UnityEngine.XR.ARSubsystems;
 using UnityEngine.Android;
 using Google.XR.ARCoreExtensions;
 using Unity.XR.CoreUtils;
+using System.Collections.Generic;
+using System.Collections;
 /// <summary>
 /// All possible error states. Used to inform other components' behaviors.
 /// </summary>
@@ -86,7 +88,7 @@ public class GeospatialManager : MonoBehaviour
     [SerializeField] private float _targetVerticalAccuracy = 0.5f;
 
     [Header("[ Settings ]")]
-    [SerializeField] private float _initTime = 3f;
+    [SerializeField] private float _initTime = 10f;
 
     private ErrorState _errorState = ErrorState.NoError;
     private string _errorMessage;
@@ -101,8 +103,21 @@ public class GeospatialManager : MonoBehaviour
                  _requestLocPerm,
                  _startedAR;
 
+    public List<ResolveCloudAnchorPromise> _resolvePromises = new();
+    public List<ResolveCloudAnchorResult> _resolveResults = new();
+
+    private HostCloudAnchorPromise _hostPromise;
+    private HostCloudAnchorResult _hostResult;
+    private AnchorController.CloudAnchorHistory _hostedCloudAnchor;
+    private IEnumerator _hostCoroutine;
+    private ARAnchor _anchor;
+    private QualityIndicator _qualityIndicator;
+    private AnchorController anchorController;
+    public TMPro.TextMeshProUGUI InstructionText;
+
     private void Start()
     {
+        anchorController = FindFirstObjectByType<AnchorController>();
         SetErrorState(ErrorState.NoError);
 
 #if UNITY_IOS && !UNITY_EDITOR
@@ -164,7 +179,10 @@ public class GeospatialManager : MonoBehaviour
             _initTime -= Time.deltaTime;
 
             if (_initTime < 0)
+            {
+                Debug.Log("Geospatial Mode enabled.");
                 _enablingGeospatial = false;
+            }
             else
                 return;
         }
@@ -193,10 +211,14 @@ public class GeospatialManager : MonoBehaviour
             InitCompleted.Invoke();
             _initComplete = true;
             SetErrorState(ErrorState.Tracking);
+
+            Debug.Log("Geospatial AR Session Ready.");
         }
 
         if (TrackingIsValid())
         {
+            Debug.Log("Tracking is Valid.");
+
             if (CheckAccuracyImproved())
             {
                 /// Raise event if accuracy has improved since last check
@@ -210,6 +232,11 @@ public class GeospatialManager : MonoBehaviour
                 TargetAccuracyReached.Invoke();
                 _targetAccuracyReached = true;
             }
+
+            // if tracking is valid, start hosting cloud anchor
+            ResolvingCloudAnchors();
+
+            HostingCloudAnchor();
         }
     }
 
@@ -264,10 +291,10 @@ public class GeospatialManager : MonoBehaviour
     private void UpdateSessionState()
     {
         /// Pressing 'back' button quits the app.
-        if (Input.GetKeyUp(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
+        // if (Input.GetKeyUp(KeyCode.Escape))
+        // {
+        //     Application.Quit();
+        // }
 
         /// Only allow the screen to sleep when not tracking.
         var sleepTimeout = SleepTimeout.NeverSleep;
@@ -411,5 +438,211 @@ public class GeospatialManager : MonoBehaviour
     {
         Quaternion quaternion = Quaternion.AngleAxis(180f - (float)pose.Heading, Vector3.up);
         return AnchorManager.AddAnchor(pose.Latitude, pose.Longitude, pose.Altitude, quaternion);
+    }
+
+    public GeospatialPose PoseToGeospatialPose(Pose pose)
+    {
+        return EarthManager.Convert(pose);
+    }
+
+    private void ResolvingCloudAnchors()
+    {
+        // No Cloud Anchor for resolving.
+        if (anchorController.ResolvingSet.Count == 0)
+        {
+            return;
+        }
+
+        // There are pending or finished resolving tasks.
+        if (_resolvePromises.Count > 0 || _resolveResults.Count > 0)
+        {
+            return;
+        }
+
+        // ARCore session is not ready for resolving.
+        if (ARSession.state != ARSessionState.SessionTracking)
+        {
+            return;
+        }
+
+        Debug.LogFormat("Attempting to resolve {0} Cloud Anchor(s): {1}",
+            anchorController.ResolvingSet.Count,
+            string.Join(",", new List<string>(anchorController.ResolvingSet).ToArray()));
+        foreach (string cloudId in anchorController.ResolvingSet)
+        {
+            var promise = anchorController.AnchorManager.ResolveCloudAnchorAsync(cloudId);
+            if (promise.State == PromiseState.Done)
+            {
+                Debug.LogFormat("Faild to resolve Cloud Anchor " + cloudId);
+                OnAnchorResolvedFinished(false, cloudId);
+            }
+            else
+            {
+                _resolvePromises.Add(promise);
+                var coroutine = ResolveAnchor(cloudId, promise);
+                StartCoroutine(coroutine);
+            }
+        }
+
+        anchorController.ResolvingSet.Clear();
+    }
+
+    private void OnAnchorResolvedFinished(bool success, string cloudId, string response = null)
+    {
+        if (success)
+        {
+            // InstructionText.text = "Resolve success!";
+            // DebugText.text =
+            //     string.Format("Succeed to resolve the Cloud Anchor: {0}.", cloudId);
+        }
+        else
+        {
+            // InstructionText.text = "Resolve failed.";
+            // DebugText.text = "Failed to resolve Cloud Anchor: " + cloudId +
+            //     (response == null ? "." : "with error " + response + ".");
+        }
+    }
+
+    private IEnumerator ResolveAnchor(string cloudId, ResolveCloudAnchorPromise promise)
+    {
+        yield return promise;
+        var result = promise.Result;
+        _resolvePromises.Remove(promise);
+        _resolveResults.Add(result);
+
+        if (result.CloudAnchorState == CloudAnchorState.Success)
+        {
+            OnAnchorResolvedFinished(true, cloudId);
+            // Instantiate(CloudAnchorPrefab, result.Anchor.transform);
+        }
+        else
+        {
+            OnAnchorResolvedFinished(false, cloudId, result.CloudAnchorState.ToString());
+        }
+    }
+    
+    public Pose GetCameraPose()
+    {
+        return new Pose(anchorController.MainCamera.transform.position,
+            anchorController.MainCamera.transform.rotation);
+    }
+
+    private void HostingCloudAnchor()
+    {
+        // There is no anchor for hosting.
+        if (_anchor == null)
+        {
+            return;
+        }
+
+        // There is a pending or finished hosting task.
+        if (_hostPromise != null || _hostResult != null)
+        {
+            return;
+        }
+
+        // Update map quality:
+        int qualityState = 2;
+        // Can pass in ANY valid camera pose to the mapping quality API.
+        // Ideally, the pose should represent users’ expected perspectives.
+        FeatureMapQuality quality =
+            anchorController.AnchorManager.EstimateFeatureMapQualityForHosting(GetCameraPose());
+        // DebugText.text = "Current mapping quality: " + quality;
+        qualityState = (int)quality;
+        // _qualityIndicator.UpdateQualityState(qualityState);
+
+        // // Hosting instructions:
+        var cameraDist = (_qualityIndicator.transform.position -
+            anchorController.MainCamera.transform.position).magnitude;
+        if (cameraDist < _qualityIndicator.Radius * 1.5f)
+        {
+            InstructionText.text = "You are too close, move backward.";
+            return;
+        }
+        else if (cameraDist > 10.0f)
+        {
+            InstructionText.text = "You are too far, come closer.";
+            return;
+        }
+        else if (_qualityIndicator.ReachTopviewAngle)
+        {
+            InstructionText.text =
+                "You are looking from the top view, move around from all sides.";
+            return;
+        }
+        else if (!_qualityIndicator.ReachQualityThreshold)
+        {
+            InstructionText.text = "Save the object here by capturing it from all sides.";
+            return;
+        }
+
+        // Start hosting:
+        InstructionText.text = "Processing...";
+        // DebugText.text = "Mapping quality has reached sufficient threshold, " +
+        //     "creating Cloud Anchor.";
+        // DebugText.text = string.Format(
+        //     "FeatureMapQuality has reached {0}, triggering CreateCloudAnchor.",
+        //     Controller.AnchorManager.EstimateFeatureMapQualityForHosting(GetCameraPose()));
+
+        // Creating a Cloud Anchor with lifetime = 1 day.
+        // This is configurable up to 365 days when keyless authentication is used.
+        var promise = anchorController.AnchorManager.HostCloudAnchorAsync(_anchor, 1);
+        if (promise.State == PromiseState.Done)
+        {
+            Debug.LogFormat("Failed to host a Cloud Anchor.");
+            OnAnchorHostedFinished(false);
+        }
+        else
+        {
+            _hostPromise = promise;
+            _hostCoroutine = HostAnchor();
+            StartCoroutine(_hostCoroutine);
+        }
+    }
+
+    private IEnumerator HostAnchor()
+    {
+        yield return _hostPromise;
+        _hostResult = _hostPromise.Result;
+        _hostPromise = null;
+
+        if (_hostResult.CloudAnchorState == CloudAnchorState.Success)
+        {
+            int count = anchorController.LoadCloudAnchorHistory().Collection.Count;
+            _hostedCloudAnchor =
+                new AnchorController.CloudAnchorHistory("CloudAnchor" + count, _hostResult.CloudAnchorId);
+            OnAnchorHostedFinished(true, _hostResult.CloudAnchorId);
+        }
+        else
+        {
+            OnAnchorHostedFinished(false, _hostResult.CloudAnchorState.ToString());
+        }
+    }
+
+    private void OnAnchorHostedFinished(bool success, string response = null)
+    {
+        if (success)
+        {
+            // InstructionText.text = "Finish!";
+            Invoke("DoHideInstructionBar", 1.5f);
+            // DebugText.text =
+            //     string.Format("Succeed to host the Cloud Anchor: {0}.", response);
+
+            // Display name panel and hide instruction bar.
+            // NameField.text = _hostedCloudAnchor.Name;
+            // NamePanel.SetActive(true);
+            // SetSaveButtonActive(true);
+        }
+        else
+        {
+            // InstructionText.text = "Host failed.";
+            // DebugText.text = "Failed to host a Cloud Anchor" + (response == null ? "." :
+            //     "with error " + response + ".");
+        }
+    }
+
+    public void HostCloudAnchor(ARAnchor anchor)
+    {
+        _anchor = anchor;
     }
 }
