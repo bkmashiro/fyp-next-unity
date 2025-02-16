@@ -7,6 +7,7 @@ using Google.XR.ARCoreExtensions;
 using Unity.XR.CoreUtils;
 using System.Collections.Generic;
 using System.Collections;
+using NUnit.Framework;
 /// <summary>
 /// All possible error states. Used to inform other components' behaviors.
 /// </summary>
@@ -119,6 +120,7 @@ public class GeospatialManager : MonoBehaviour
     private void Start()
     {
         anchorController = FindFirstObjectByType<AnchorController>();
+        _qualityIndicator = FindFirstObjectByType<QualityIndicator>();
         SetErrorState(ErrorState.NoError);
 
 #if UNITY_IOS && !UNITY_EDITOR
@@ -173,7 +175,6 @@ public class GeospatialManager : MonoBehaviour
                 }
                 break;
         }
-
         /// Waiting for new configuration taking effect
         if (_enablingGeospatial)
         {
@@ -194,7 +195,9 @@ public class GeospatialManager : MonoBehaviour
         if (earthState != EarthState.Enabled)
         {
             SetErrorState(ErrorState.Message, "Error: Unable to start Geospatial AR");
-            enabled = false;
+            // enabled = false;
+            // retry
+            _initTime = 3f;
             return;
         }
 
@@ -370,6 +373,7 @@ public class GeospatialManager : MonoBehaviour
         {
             _trackingValid = valid;
             SetErrorState(_trackingValid ? ErrorState.NoError : ErrorState.Tracking);
+            Debug.Log("Tracking Valid: " + _trackingValid);
         }
 
         return valid;
@@ -522,7 +526,7 @@ public class GeospatialManager : MonoBehaviour
             OnAnchorResolvedFinished(false, cloudId, result.CloudAnchorState.ToString());
         }
     }
-    
+
     public Pose GetCameraPose()
     {
         return new Pose(anchorController.MainCamera.transform.position,
@@ -531,7 +535,6 @@ public class GeospatialManager : MonoBehaviour
 
     private void HostingCloudAnchor()
     {
-        Debug.Log("HostingCloudAnchor called.");
         // There is no anchor for hosting.
         if (_anchor == null)
         {
@@ -552,32 +555,37 @@ public class GeospatialManager : MonoBehaviour
             anchorController.AnchorManager.EstimateFeatureMapQualityForHosting(GetCameraPose());
         DebugText.text = "Current mapping quality: " + quality;
         qualityState = (int)quality;
-        _qualityIndicator.UpdateQualityState(qualityState);
-
+        // _qualityIndicator.UpdateQualityState(qualityState);
+        Debug.Log("Current mapping quality: " + quality);
+        if (quality == FeatureMapQuality.Insufficient)
+        {
+            InstructionText.text = "Mapping quality is insufficient, move around.";
+            return;
+        }
         // // Hosting instructions:
-        var cameraDist = (_qualityIndicator.transform.position -
-            anchorController.MainCamera.transform.position).magnitude;
-        if (cameraDist < _qualityIndicator.Radius * 1.5f)
-        {
-            InstructionText.text = "You are too close, move backward.";
-            return;
-        }
-        else if (cameraDist > 10.0f)
-        {
-            InstructionText.text = "You are too far, come closer.";
-            return;
-        }
-        else if (_qualityIndicator.ReachTopviewAngle)
-        {
-            InstructionText.text =
-                "You are looking from the top view, move around from all sides.";
-            return;
-        }
-        else if (!_qualityIndicator.ReachQualityThreshold)
-        {
-            InstructionText.text = "Save the object here by capturing it from all sides.";
-            return;
-        }
+        // var cameraDist = (_qualityIndicator.transform.position -
+        //     anchorController.MainCamera.transform.position).magnitude;
+        // if (cameraDist < _qualityIndicator.Radius * 1.5f)
+        // {
+        //     InstructionText.text = "You are too close, move backward.";
+        //     return;
+        // }
+        // else if (cameraDist > 10.0f)
+        // {
+        //     InstructionText.text = "You are too far, come closer.";
+        //     return;
+        // }
+        // else if (_qualityIndicator.ReachTopviewAngle)
+        // {
+        //     InstructionText.text =
+        //         "You are looking from the top view, move around from all sides.";
+        //     return;
+        // }
+        // else if (!_qualityIndicator.ReachQualityThreshold)
+        // {
+        //     InstructionText.text = "Save the object here by capturing it from all sides.";
+        //     return;
+        // }
 
         // Start hosting:
         InstructionText.text = "Processing...";
@@ -647,6 +655,12 @@ public class GeospatialManager : MonoBehaviour
     public void HostCloudAnchor(ARAnchor anchor)
     {
         Debug.Log("HostCloudAnchor called.");
+
+        // put quality indicator to the anchor position
+        _qualityIndicator.transform.position = anchor.transform.position;
+        _qualityIndicator.transform.rotation = anchor.transform.rotation;
+        _qualityIndicator.gameObject.SetActive(true);
+
         _anchor = anchor;
     }
 }
