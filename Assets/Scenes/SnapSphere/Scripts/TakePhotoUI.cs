@@ -10,9 +10,10 @@ using UnityEngine.XR.ARFoundation;
 public class TakePhotoUI : MonoBehaviour
 {
     public GameObject spatialImagePrefab;
+    private GeospatialManager _geospatialManager;
     void OnEnable()
     {
-
+        _geospatialManager = FindFirstObjectByType<GeospatialManager>();
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -39,16 +40,12 @@ public class TakePhotoUI : MonoBehaviour
                 return;
             }
 
-            // 创建物体并应用材质
-            // var img = Instantiate(spatialImagePrefab);
-            // img.transform.position = Camera.main.transform.position;
-            // img.transform.rotation = Camera.main.transform.rotation;
-            // img.transform.GetChild(0).GetComponent<Renderer>().material.mainTexture = photo;
+            var plane = CreatePlaneInView(photo, 0.7f, Camera.main);
+            // Add anchor
+            var anchor = plane.AddComponent<ARAnchor>();
 
-            // img.SetActive(true);
-
-            CreatePlaneInView(photo, 0.7f, Camera.main);
-
+            // Add anchor to the ARAnchorManager
+            _geospatialManager.HostCloudAnchor(anchor);
         }
         catch (Exception ex)
         {
@@ -57,18 +54,18 @@ public class TakePhotoUI : MonoBehaviour
     }
 
 
-    public void CreatePlaneInView(Texture2D texture, float distance, Camera mainCamera)
+    public GameObject CreatePlaneInView(Texture2D texture, float distance, Camera mainCamera)
     {
         if (mainCamera == null)
         {
             Debug.LogError("Main camera not assigned!");
-            return;
+            throw new ArgumentNullException(nameof(mainCamera));
         }
 
         if (texture == null)
         {
             Debug.LogError("Texture is null!");
-            return;
+            throw new ArgumentNullException(nameof(texture));
         }
 
         // 计算平面位置：距离摄像机 N 米
@@ -101,6 +98,8 @@ public class TakePhotoUI : MonoBehaviour
         }
         plane.SetActive(true);
         Debug.Log($"Created plane at distance {distance} meters with size {width}x{height}");
+
+        return plane;
     }
 
 

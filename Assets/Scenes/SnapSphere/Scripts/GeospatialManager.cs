@@ -114,6 +114,7 @@ public class GeospatialManager : MonoBehaviour
     private QualityIndicator _qualityIndicator;
     private AnchorController anchorController;
     public TMPro.TextMeshProUGUI InstructionText;
+    public TMPro.TextMeshProUGUI DebugText;
 
     private void Start()
     {
@@ -337,6 +338,7 @@ public class GeospatialManager : MonoBehaviour
     /// <param name="message"></param>
     private void SetErrorState(ErrorState errorState, string message = null)
     {
+        Debug.Log("Error State: " + errorState + " - " + message);
         if (_errorState != errorState)
         {
             _errorState = errorState;
@@ -529,6 +531,7 @@ public class GeospatialManager : MonoBehaviour
 
     private void HostingCloudAnchor()
     {
+        Debug.Log("HostingCloudAnchor called.");
         // There is no anchor for hosting.
         if (_anchor == null)
         {
@@ -547,9 +550,9 @@ public class GeospatialManager : MonoBehaviour
         // Ideally, the pose should represent users’ expected perspectives.
         FeatureMapQuality quality =
             anchorController.AnchorManager.EstimateFeatureMapQualityForHosting(GetCameraPose());
-        // DebugText.text = "Current mapping quality: " + quality;
+        DebugText.text = "Current mapping quality: " + quality;
         qualityState = (int)quality;
-        // _qualityIndicator.UpdateQualityState(qualityState);
+        _qualityIndicator.UpdateQualityState(qualityState);
 
         // // Hosting instructions:
         var cameraDist = (_qualityIndicator.transform.position -
@@ -623,11 +626,11 @@ public class GeospatialManager : MonoBehaviour
     {
         if (success)
         {
-            // InstructionText.text = "Finish!";
-            Invoke("DoHideInstructionBar", 1.5f);
-            // DebugText.text =
-            //     string.Format("Succeed to host the Cloud Anchor: {0}.", response);
-
+            InstructionText.text = "Finish!";
+            // Invoke("DoHideInstructionBar", 1.5f);
+            DebugText.text =
+                string.Format("Succeed to host the Cloud Anchor: {0}.", response);
+            Debug.Log("Succeed to host the Cloud Anchor: " + response);
             // Display name panel and hide instruction bar.
             // NameField.text = _hostedCloudAnchor.Name;
             // NamePanel.SetActive(true);
@@ -643,6 +646,7 @@ public class GeospatialManager : MonoBehaviour
 
     public void HostCloudAnchor(ARAnchor anchor)
     {
+        Debug.Log("HostCloudAnchor called.");
         _anchor = anchor;
     }
 }

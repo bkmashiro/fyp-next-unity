@@ -17,4 +17,9 @@ public class QualityIndicator : MonoBehaviour
     {
 
     }
+
+    public void UpdateQualityState(int qualityState)
+    {
+        Debug.Log($"Quality state: {qualityState}");
+    }
 }

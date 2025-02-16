@@ -8,8 +8,14 @@ public class AnchorController : MonoBehaviour
 {
     public List<string> ResolvingSet = new List<string>();
     public ARAnchorManager AnchorManager;
-    public float Radius;
-    public Camera MainCamera { get; set; }
+    public float Radius = 5f;
+    public Camera MainCamera
+    {
+        get
+        {
+            return Camera.main;
+        }
+    }
 
     void OnEnable()
     {
