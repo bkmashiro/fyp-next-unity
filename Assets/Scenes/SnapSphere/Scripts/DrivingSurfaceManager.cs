@@ -43,7 +43,7 @@ public class DrivingSurfaceManager : MonoBehaviour
 
     private void Start()
     {
-        PlaneManager = GetComponent<ARPlaneManager>();
+        PlaneManager = FindFirstObjectByType<ARPlaneManager>();
     }
 
     private void Update()

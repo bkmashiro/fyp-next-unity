@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Google.XR.ARCoreExtensions;
 using Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors;
 using Unity.XR.CoreUtils;
@@ -11,17 +12,35 @@ using UnityEngine.UIElements;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
+[Serializable]
+public class GeoSpatialImageData
+{
+    public Texture2D texture;
+    public Vector3 position;
+    public Quaternion rotation;
+    public Vector3 scale;
+    public string cloudAnchorId;
+    public GameObject spatialImageGO;
+    public GeospatialPose pose;
+    public ARAnchor anchor;
+}
+
 public class TakePhotoUI : MonoBehaviour
 {
     public GameObject spatialImagePrefab;
     private GeospatialManager _geospatialManager;
 
     public GameObject CloudAnchorPrefab;
+    public GameObject AnchorResolvedPrefab;
     public GameObject MapQualityIndicatorPrefab;
     public MapQualityIndicator _qualityIndicator;
+
+    private GeoSpatialImageData geoSpatialImage = new();
+    private SSApi _api;
     void OnEnable()
     {
         _geospatialManager = FindFirstObjectByType<GeospatialManager>();
+        _api = FindFirstObjectByType<SSApi>();
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -50,35 +69,48 @@ public class TakePhotoUI : MonoBehaviour
         PerformHitTest(touch.position);
     }
 
-    public async void TestCloudAnchor()
-    {
-        SceneManager.LoadScene("CreateAnchor");
-    }
-
     public async void OnButtonClicked()
     {
-        // try
-        // {
-        //     // 请求拍照并等待结果
-        //     var photo = await FindFirstObjectByType<CameraSnapshotManager>().TakePhotoAsync();
+        try
+        {
+            // 请求拍照并等待结果
+            var photo = await FindFirstObjectByType<CameraSnapshotManager>().TakePhotoAsync();
 
-        //     if (photo == null)
-        //     {
-        //         Debug.LogError("Photo is null, unable to apply texture.");
-        //         return;
-        //     }
+            if (photo == null)
+            {
+                Debug.LogError("Photo is null, unable to apply texture.");
+                return;
+            }
 
-        //     var plane = CreatePlaneInView(photo, 0.7f, Camera.main);
-        //     // Add anchor
-        //     var anchor = plane.AddComponent<ARAnchor>();
+            var plane = CreatePlaneInView(photo, 0.7f, Camera.main);
+            var anchor = plane.AddComponent<ARAnchor>();
+            geoSpatialImage = new GeoSpatialImageData
+            {
+                texture = photo,
+                position = plane.transform.position,
+                rotation = plane.transform.rotation,
+                scale = plane.transform.localScale,
+                spatialImageGO = plane,
+                pose = _geospatialManager.EarthManager.Convert(
+                    new Pose(plane.transform.position, plane.transform.rotation)
+                )
+            };
 
-        //     // Add anchor to the ARAnchorManager
-        //     _geospatialManager.HostCloudAnchor(anchor);
-        // }
-        // catch (Exception ex)
-        // {
-        //     Debug.LogError($"Error capturing photo: {ex}");
-        // }
+            return;
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error capturing photo: {ex}");
+        }
+    }
+
+    // link photo and anchor, save to backend
+    public async void LinkPhotoAndAnchor()
+    {
+        // string sample_AnchorId = "ua-a965cfb1d5ada10b385a4af58703a88b";
+        // geoSpatialImage.cloudAnchorId = sample_AnchorId;
+        // Save to backend
+        await _api.SaveGeoSpatialImage(geoSpatialImage);
     }
 
     public GameObject CreatePlaneInView(Texture2D texture, float distance, Camera mainCamera)
@@ -132,7 +164,13 @@ public class TakePhotoUI : MonoBehaviour
     ARAnchor _anchor;
     private void PerformHitTest(Vector2 touchPos)
     {
-        List<ARRaycastHit> hitResults = new List<ARRaycastHit>();
+        // if on an UI element, ignore
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
+        List<ARRaycastHit> hitResults = new();
         _geospatialManager.RaycastManager.Raycast(
             touchPos, hitResults, TrackableType.PlaneWithinPolygon);
 
@@ -176,8 +214,18 @@ public class TakePhotoUI : MonoBehaviour
             // DebugText.text = "Waiting for sufficient mapping quaility...";
 
             // Hide plane generator so users can focus on the object they placed.
+            _geospatialManager.HostCloudAnchor(_anchor, _qualityIndicator);
+            geoSpatialImage.anchor = _anchor;
             UpdatePlaneVisibility(false);
         }
+
+        _geospatialManager.OnAnchorHosted.AddListener((anchorId) =>
+            {
+                geoSpatialImage.cloudAnchorId = anchorId;
+                Debug.Log($"Linked photo and anchor, cloudAnchorId: {geoSpatialImage.cloudAnchorId}");
+
+                _api.Echo("Linked photo and anchor, cloudAnchorId: " + geoSpatialImage.cloudAnchorId);
+            });
     }
 
     private void UpdatePlaneVisibility(bool visible)
@@ -186,5 +234,54 @@ public class TakePhotoUI : MonoBehaviour
         {
             plane.gameObject.SetActive(visible);
         }
+    }
+
+    public void TryResolveAnchor(string cloudAnchorId)
+    {
+        _geospatialManager.ResolveCloudAnchor(cloudAnchorId);
+
+        _geospatialManager.OnAnchorResolved.AddListener((id, anchor) =>
+        {
+            _api.Echo($"Anchor {id} resolved at: {anchor.Anchor.transform}");
+
+            var resolvedAnchorGO = Instantiate(AnchorResolvedPrefab, anchor.Anchor.transform);
+            resolvedAnchorGO.transform.position = anchor.Anchor.transform.position;
+            resolvedAnchorGO.transform.rotation = anchor.Anchor.transform.rotation;
+            resolvedAnchorGO.transform.localScale = anchor.Anchor.transform.localScale;
+
+        });
+    }
+
+    public async void TryShowSpatialImage(string imageId)
+    {
+        var img = await _api.GetGeoObject(imageId);
+        if (img == null)
+        {
+            Debug.LogError($"Image {imageId} not found");
+            return;
+        }
+        Debug.Log($"Image {imageId} found, downloading texture..., data: {img}");
+
+        var texture = await _api.DownloadTexture(img.OssFile.Key);
+        Debug.Log($"Texture downloaded, creating plane...");
+        var plane = CreatePlaneInView(texture, 0.7f, Camera.main);
+        Debug.Log($"Plane created, setting position and rotation...");
+        // try to resolve anchor
+        TryResolveAnchor(img.CloudAnchorId);
+        _geospatialManager.OnAnchorResolved.AddListener((id, anchor) =>
+        {
+            Debug.Log($"Anchor resolved, setting position and rotation...");
+            plane.transform.parent = anchor.Anchor.transform;
+            plane.transform.localScale = anchor.Anchor.transform.localScale;
+            plane.transform.SetLocalPositionAndRotation(new Vector3(
+                (float)img.RelPosition.Coordinates[0],
+                (float)img.RelAltitude,
+                (float)img.RelPosition.Coordinates[1]
+            ), Quaternion.Euler(
+                (float)img.RelOrientation[0],
+                (float)img.RelOrientation[1],
+                (float)img.RelOrientation[2]
+            ));
+        });
     }
 }

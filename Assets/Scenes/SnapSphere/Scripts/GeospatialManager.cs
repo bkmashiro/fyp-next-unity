@@ -76,6 +76,8 @@ public class GeospatialManager : MonoBehaviour
     /// Raised once when the specified target accuracy values are reached
     /// </summary>
     [HideInInspector] public UnityEvent TargetAccuracyReached;
+    [HideInInspector] public UnityEvent<string> OnAnchorHosted;
+    [HideInInspector] public UnityEvent<string, ResolveCloudAnchorResult> OnAnchorResolved;
 
     /// <summary>
     /// Raised on any frame that there is a change in error state
@@ -242,12 +244,12 @@ public class GeospatialManager : MonoBehaviour
                 TargetAccuracyReached.Invoke();
                 _targetAccuracyReached = true;
             }
-
-            // if tracking is valid, start hosting cloud anchor
-            ResolvingCloudAnchors();
-
-            HostingCloudAnchor();
         }
+
+        // if tracking is valid, start hosting cloud anchor
+        ResolvingCloudAnchors();
+
+        HostingCloudAnchor();
     }
 
     /// <summary>
@@ -503,15 +505,15 @@ public class GeospatialManager : MonoBehaviour
     {
         if (success)
         {
-            // InstructionText.text = "Resolve success!";
-            // DebugText.text =
-            //     string.Format("Succeed to resolve the Cloud Anchor: {0}.", cloudId);
+            InstructionText.text = "Resolve success!";
+            DebugText.text =
+                string.Format("Succeed to resolve the Cloud Anchor: {0}.", cloudId);
         }
         else
         {
-            // InstructionText.text = "Resolve failed.";
-            // DebugText.text = "Failed to resolve Cloud Anchor: " + cloudId +
-            //     (response == null ? "." : "with error " + response + ".");
+            InstructionText.text = "Resolve failed.";
+            DebugText.text = "Failed to resolve Cloud Anchor: " + cloudId +
+                (response == null ? "." : "with error " + response + ".");
         }
     }
 
@@ -526,6 +528,7 @@ public class GeospatialManager : MonoBehaviour
         {
             OnAnchorResolvedFinished(true, cloudId);
             // Instantiate(CloudAnchorPrefab, result.Anchor.transform);
+            OnAnchorResolved.Invoke(cloudId, result);
         }
         else
         {
@@ -535,10 +538,7 @@ public class GeospatialManager : MonoBehaviour
 
     public Pose GetCameraPose()
     {
-        var pose = new Pose(anchorController.MainCamera.transform.position,
-            anchorController.MainCamera.transform.rotation);
-        // Debug.Log("Camera pose: " + pose);
-        return pose;
+        return new Pose(SessionOrigin.Camera.transform.position, SessionOrigin.Camera.transform.rotation);
     }
 
     private void HostingCloudAnchor()
@@ -560,19 +560,16 @@ public class GeospatialManager : MonoBehaviour
         // Can pass in ANY valid camera pose to the mapping quality API.
         // Ideally, the pose should represent users’ expected perspectives.
         FeatureMapQuality quality =
-            anchorController.AnchorManager.EstimateFeatureMapQualityForHosting(GetCameraPose());
-        DebugText.text = "Current mapping quality: " + quality;
+            AnchorManager.EstimateFeatureMapQualityForHosting(GetCameraPose());
+        DebugText.text = GetCameraPose() + "Current mapping quality: " + quality;
         qualityState = (int)quality;
         _qualityIndicator.UpdateQualityState(qualityState);
         // Debug.Log("Current mapping quality: " + quality);
-        // if (quality == FeatureMapQuality.Insufficient)
-        // {
-        //     InstructionText.text = "Mapping quality is insufficient, move around.";
-        //     return;
-        // }
         // Hosting instructions:
         var cameraDist = (_qualityIndicator.transform.position -
             anchorController.MainCamera.transform.position).magnitude;
+        // Debug.Log("Dist: " + cameraDist);
+
         if (cameraDist < _qualityIndicator.Radius * 1.5f)
         {
             InstructionText.text = "You are too close, move backward.";
@@ -645,38 +642,33 @@ public class GeospatialManager : MonoBehaviour
             InstructionText.text = "Finish!";
             // Invoke("DoHideInstructionBar", 1.5f);
             DebugText.text =
-                string.Format("Succeed to host the Cloud Anchor: {0}.", response);
+                string.Format("Succeed to host the Cloud Anchor: {0}.", _hostedCloudAnchor.Id);
             Debug.Log("Succeed to host the Cloud Anchor: " + response);
             // Display name panel and hide instruction bar.
-            // NameField.text = _hostedCloudAnchor.Name;
+            DebugText.text = _hostedCloudAnchor.Name;
             // NamePanel.SetActive(true);
             // SetSaveButtonActive(true);
+
+            OnAnchorHosted.Invoke(_hostedCloudAnchor.Id);
         }
         else
         {
-            // InstructionText.text = "Host failed.";
-            // DebugText.text = "Failed to host a Cloud Anchor" + (response == null ? "." :
-            //     "with error " + response + ".");
+            InstructionText.text = "Host failed.";
+            DebugText.text = "Failed to host a Cloud Anchor" + (response == null ? "." :
+                "with error " + response + ".");
         }
     }
 
-    public void HostCloudAnchor(ARAnchor anchor)
+    public void HostCloudAnchor(ARAnchor anchor, MapQualityIndicator qualityIndicator)
     {
-        Debug.Log("HostCloudAnchor called.");
-
-        if (_qualityIndicator != null)
-        {
-            Destroy(_qualityIndicator.gameObject);
-            _qualityIndicator = null;
-        }
-
-        _qualityIndicator = Instantiate(MapQualityIndicatorPrefab).GetComponent<MapQualityIndicator>();
-        _qualityIndicator.transform.position = anchor.transform.position;
-        _qualityIndicator.transform.rotation = Quaternion.LookRotation(
-            _qualityIndicator.transform.position - anchorController.MainCamera.transform.position);
-
-        _qualityIndicator.DrawIndicator(PlaneAlignment.HorizontalUp, Camera.main);
+        // Debug.Log("HostCloudAnchor called.");
 
         _anchor = anchor;
+        _qualityIndicator = qualityIndicator;
+    }
+
+    public void ResolveCloudAnchor(string cloudAnchorId)
+    {
+        anchorController.ResolvingSet.Add(cloudAnchorId);
     }
 }
