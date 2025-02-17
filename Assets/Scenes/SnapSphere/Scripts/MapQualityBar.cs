@@ -1,21 +1,5 @@
 using UnityEngine;
 
-public class MapQualityBar : MonoBehaviour
-{
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-}
-
-
 //-----------------------------------------------------------------------
 // <copyright file="MapQualityBar.cs" company="Google LLC">
 //
@@ -43,7 +27,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
     /// <summary>
     /// An animated bar for visualizing the map quality status in real time.
     /// </summary>
-    public class MapQualityBar : MonoBehaviour
+    public class MapQualityBar2 : MonoBehaviour
     {
         /// <summary>
         /// The animatior of this map quality bar which is used for state update.

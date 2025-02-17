@@ -26,7 +26,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
     /// A circle renderer, draws an arc using a given range.
     /// </summary>
     [RequireComponent(typeof(LineRenderer))]
-    public class CircleRenderer : MonoBehaviour
+    public class CircleRenderer2 : MonoBehaviour
     {
         /// <summary>
         /// The count of the segments that represents a full circle.
@@ -35,7 +35,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
         public int Segment = 72;
 
         // Variable name string used for changing particle material color.
-        private const string _varColor = "_TintColor";
+        private const string _varColor = "_Color";
 
         private LineRenderer _lineRenderer;
 

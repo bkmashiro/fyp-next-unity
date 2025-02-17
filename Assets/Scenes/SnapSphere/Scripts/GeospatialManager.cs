@@ -8,6 +8,7 @@ using Unity.XR.CoreUtils;
 using System.Collections.Generic;
 using System.Collections;
 using NUnit.Framework;
+using Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors;
 /// <summary>
 /// All possible error states. Used to inform other components' behaviors.
 /// </summary>
@@ -21,6 +22,8 @@ public class GeospatialManager : MonoBehaviour
     public ARAnchorManager AnchorManager;
     public AREarthManager EarthManager;
     public ARCoreExtensions ARCoreExtensions;
+    public ARRaycastManager RaycastManager;
+    public ARPlaneManager PlaneManager;
 
     /// <summary>
     /// True while Earth Manager is tracking and accuracy minimums are met
@@ -56,6 +59,8 @@ public class GeospatialManager : MonoBehaviour
     /// Current error state enum
     /// </summary>
     public ErrorState CurrentErrorState { get => _errorState; }
+
+    public Camera MainCamera { get => Camera.main; }
 
     /// <summary>
     /// Raised once when all components are ready
@@ -112,15 +117,16 @@ public class GeospatialManager : MonoBehaviour
     private AnchorController.CloudAnchorHistory _hostedCloudAnchor;
     private IEnumerator _hostCoroutine;
     private ARAnchor _anchor;
-    private QualityIndicator _qualityIndicator;
+    private MapQualityIndicator _qualityIndicator;
     private AnchorController anchorController;
     public TMPro.TextMeshProUGUI InstructionText;
     public TMPro.TextMeshProUGUI DebugText;
+    public GameObject MapQualityIndicatorPrefab;
 
     private void Start()
     {
         anchorController = FindFirstObjectByType<AnchorController>();
-        _qualityIndicator = FindFirstObjectByType<QualityIndicator>();
+        _qualityIndicator = FindFirstObjectByType<MapQualityIndicator>();
         SetErrorState(ErrorState.NoError);
 
 #if UNITY_IOS && !UNITY_EDITOR
@@ -221,7 +227,7 @@ public class GeospatialManager : MonoBehaviour
 
         if (TrackingIsValid())
         {
-            Debug.Log("Tracking is Valid.");
+            // Debug.Log("Tracking is Valid.");
 
             if (CheckAccuracyImproved())
             {
@@ -529,8 +535,10 @@ public class GeospatialManager : MonoBehaviour
 
     public Pose GetCameraPose()
     {
-        return new Pose(anchorController.MainCamera.transform.position,
+        var pose = new Pose(anchorController.MainCamera.transform.position,
             anchorController.MainCamera.transform.rotation);
+        // Debug.Log("Camera pose: " + pose);
+        return pose;
     }
 
     private void HostingCloudAnchor()
@@ -555,45 +563,45 @@ public class GeospatialManager : MonoBehaviour
             anchorController.AnchorManager.EstimateFeatureMapQualityForHosting(GetCameraPose());
         DebugText.text = "Current mapping quality: " + quality;
         qualityState = (int)quality;
-        // _qualityIndicator.UpdateQualityState(qualityState);
-        Debug.Log("Current mapping quality: " + quality);
-        if (quality == FeatureMapQuality.Insufficient)
+        _qualityIndicator.UpdateQualityState(qualityState);
+        // Debug.Log("Current mapping quality: " + quality);
+        // if (quality == FeatureMapQuality.Insufficient)
+        // {
+        //     InstructionText.text = "Mapping quality is insufficient, move around.";
+        //     return;
+        // }
+        // Hosting instructions:
+        var cameraDist = (_qualityIndicator.transform.position -
+            anchorController.MainCamera.transform.position).magnitude;
+        if (cameraDist < _qualityIndicator.Radius * 1.5f)
         {
-            InstructionText.text = "Mapping quality is insufficient, move around.";
+            InstructionText.text = "You are too close, move backward.";
             return;
         }
-        // // Hosting instructions:
-        // var cameraDist = (_qualityIndicator.transform.position -
-        //     anchorController.MainCamera.transform.position).magnitude;
-        // if (cameraDist < _qualityIndicator.Radius * 1.5f)
-        // {
-        //     InstructionText.text = "You are too close, move backward.";
-        //     return;
-        // }
-        // else if (cameraDist > 10.0f)
-        // {
-        //     InstructionText.text = "You are too far, come closer.";
-        //     return;
-        // }
-        // else if (_qualityIndicator.ReachTopviewAngle)
-        // {
-        //     InstructionText.text =
-        //         "You are looking from the top view, move around from all sides.";
-        //     return;
-        // }
-        // else if (!_qualityIndicator.ReachQualityThreshold)
-        // {
-        //     InstructionText.text = "Save the object here by capturing it from all sides.";
-        //     return;
-        // }
+        else if (cameraDist > 10.0f)
+        {
+            InstructionText.text = "You are too far, come closer.";
+            return;
+        }
+        else if (_qualityIndicator.ReachTopviewAngle)
+        {
+            InstructionText.text =
+                "You are looking from the top view, move around from all sides.";
+            return;
+        }
+        else if (!_qualityIndicator.ReachQualityThreshold)
+        {
+            InstructionText.text = "Save the object here by capturing it from all sides.";
+            return;
+        }
 
         // Start hosting:
         InstructionText.text = "Processing...";
-        // DebugText.text = "Mapping quality has reached sufficient threshold, " +
-        //     "creating Cloud Anchor.";
-        // DebugText.text = string.Format(
-        //     "FeatureMapQuality has reached {0}, triggering CreateCloudAnchor.",
-        //     Controller.AnchorManager.EstimateFeatureMapQualityForHosting(GetCameraPose()));
+        DebugText.text = "Mapping quality has reached sufficient threshold, " +
+            "creating Cloud Anchor.";
+        DebugText.text = string.Format(
+            "FeatureMapQuality has reached {0}, triggering CreateCloudAnchor.",
+            anchorController.AnchorManager.EstimateFeatureMapQualityForHosting(GetCameraPose()));
 
         // Creating a Cloud Anchor with lifetime = 1 day.
         // This is configurable up to 365 days when keyless authentication is used.
@@ -656,10 +664,18 @@ public class GeospatialManager : MonoBehaviour
     {
         Debug.Log("HostCloudAnchor called.");
 
-        // put quality indicator to the anchor position
+        if (_qualityIndicator != null)
+        {
+            Destroy(_qualityIndicator.gameObject);
+            _qualityIndicator = null;
+        }
+
+        _qualityIndicator = Instantiate(MapQualityIndicatorPrefab).GetComponent<MapQualityIndicator>();
         _qualityIndicator.transform.position = anchor.transform.position;
-        _qualityIndicator.transform.rotation = anchor.transform.rotation;
-        _qualityIndicator.gameObject.SetActive(true);
+        _qualityIndicator.transform.rotation = Quaternion.LookRotation(
+            _qualityIndicator.transform.position - anchorController.MainCamera.transform.position);
+
+        _qualityIndicator.DrawIndicator(PlaneAlignment.HorizontalUp, Camera.main);
 
         _anchor = anchor;
     }

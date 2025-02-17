@@ -179,6 +179,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SnapSphere/CreateAnchor.unity
     guid: edb208b1a87271845a68cb9acfe42f15
+  - enabled: 0
+    path: Assets/Samples/ARCore Extensions/1.47.0/Persistent Cloud Anchor Sample/Scenes/PersistentCloudAnchorsArf6.unity
+    guid: 66d0e6a840eec4f7daf83c2f16433cee
   m_configObjects:
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: c52d3bb36b4c86f47af54ab9c7a02589,
       type: 2}

@@ -5,13 +5,13 @@
 //     // Start is called once before the first execution of Update after the MonoBehaviour is created
 //     void Start()
 //     {
-        
+
 //     }
 
 //     // Update is called once per frame
 //     void Update()
 //     {
-        
+
 //     }
 // }
 
@@ -46,7 +46,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
     /// <summary>
     /// An animated indicator used to guide better hosting quality.
     /// </summary>
-    public class MapQualityIndicator : MonoBehaviour
+    public class MapQualityIndicator2 : MonoBehaviour
     {
         /// <summary>
         /// The map quality bar game object.
@@ -246,7 +246,11 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             var rotation = Quaternion.AngleAxis(0, Vector3.up);
             var qualityBar =
                 Instantiate(MapQualityBarPrefab, basePos + position, rotation, transform);
+            // Debug.Log(qualityBar);
             _mapQualityBars.Add(qualityBar.GetComponent<MapQualityBar>());
+            Debug.Log("Instantiated: " + qualityBar);
+            Debug.Log(qualityBar.GetComponent<MapQualityBar>() != null ? "Component found" : "Component missing");
+
 
             for (float deltaAngle = _barSpacing; deltaAngle < Range / 2;
                 deltaAngle += _barSpacing)
@@ -265,6 +269,7 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
                     Instantiate(MapQualityBarPrefab, basePos + position, rotation, transform);
                 _mapQualityBars.Add(qualityBar.GetComponent<MapQualityBar>());
             }
+
         }
 
         private bool IsLookingAtBar(MapQualityBar bar)
@@ -310,6 +315,12 @@ namespace Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors
             {
                 gameObject.SetActive(false);
             }
+        }
+
+        [ContextMenu("Show Indicator")]
+        public void ShowIndicator()
+        {
+            this.DrawIndicator(PlaneAlignment.HorizontalUp, Camera.main);
         }
     }
 }
