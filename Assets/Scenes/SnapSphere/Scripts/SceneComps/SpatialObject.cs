@@ -24,7 +24,7 @@ public class SpatialObject : MonoBehaviour
   }
 
   abstract public string Serialize();
-  abstract public void Deserialize(string data);
+  abstract public void Load(string data);
   virtual public void SaveChanges()
   {
   }
