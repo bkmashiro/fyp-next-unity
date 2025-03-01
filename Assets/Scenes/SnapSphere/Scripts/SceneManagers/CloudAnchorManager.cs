@@ -1,16 +1,19 @@
 
 
+using Google.XR.ARCoreExtensions;
+using UnityEngine;
+using System.Collections.Generic;
+
 public class CloudAnchorManager
 {
-  Dictionary<CloudAnchor> cloudAnchors = new();
-
+  Dictionary<string, CloudAnchor> cloudAnchors = new();
   public void CreateCloudAnchor(Vector3 position, Quaternion rotation)
   {
-    CloudAnchor cloudAnchor = new CloudAnchor();
+    CloudAnchor cloudAnchor = new();
     cloudAnchor.approxPosition = position;
     cloudAnchor.approxRotation = rotation;
     cloudAnchor.state = CloudAnchor.CloudAnchorState.Pending;
-    cloudAnchors.Add(cloudAnchor);
+    cloudAnchors.Add(cloudAnchor.id, cloudAnchor);
     cloudAnchor.ShowGuide();
   }
 
@@ -28,7 +31,7 @@ public class CloudAnchorManager
 
 public class CloudAnchor
 {
-  enum CloudAnchorState
+  public enum CloudAnchorState
   {
     Pending,
     Resolved,
@@ -39,10 +42,10 @@ public class CloudAnchor
   public ARCloudAnchor cloudAnchor;
   public string id;
 
-  Vector3 approxPosition;
-  Quaternion approxRotation;
+  public Vector3 approxPosition;
+  public Quaternion approxRotation;
 
-  void ShowGuide()
+  public void ShowGuide()
   {
     // Show guide
   }

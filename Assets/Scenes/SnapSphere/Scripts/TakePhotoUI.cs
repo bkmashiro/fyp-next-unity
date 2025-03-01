@@ -62,6 +62,7 @@ public class TakePhotoUI : MonoBehaviour
         // Ignore the touch if it's pointing on UI objects.
         if (EventSystem.current.IsPointerOverGameObject(touch.fingerId))
         {
+            Debug.Log("Ignoring touch on UI.");
             return;
         }
 
@@ -219,12 +220,13 @@ public class TakePhotoUI : MonoBehaviour
             UpdatePlaneVisibility(false);
         }
 
-        _geospatialManager.OnAnchorHosted.AddListener((anchorId) =>
+        _geospatialManager.OnAnchorHosted.AddListener(async (anchorId) =>
             {
                 geoSpatialImage.cloudAnchorId = anchorId;
                 Debug.Log($"Linked photo and anchor, cloudAnchorId: {geoSpatialImage.cloudAnchorId}");
 
                 _api.Echo("Linked photo and anchor, cloudAnchorId: " + geoSpatialImage.cloudAnchorId);
+                await _api.CreateCloudAnchorRecord(geoSpatialImage.cloudAnchorId, geoSpatialImage.anchor.transform.position);
             });
     }
 
@@ -272,15 +274,16 @@ public class TakePhotoUI : MonoBehaviour
         {
             Debug.Log($"Anchor resolved, setting position and rotation...");
             plane.transform.parent = anchor.Anchor.transform;
-            plane.transform.localScale = anchor.Anchor.transform.localScale;
+            // plane.transform.localScale = anchor.Anchor.transform.localScale;
             plane.transform.SetLocalPositionAndRotation(new Vector3(
                 (float)img.RelPosition.Coordinates[0],
                 (float)img.RelAltitude,
                 (float)img.RelPosition.Coordinates[1]
-            ), Quaternion.Euler(
+            ), new Quaternion(
                 (float)img.RelOrientation[0],
                 (float)img.RelOrientation[1],
-                (float)img.RelOrientation[2]
+                (float)img.RelOrientation[2],
+                (float)img.RelOrientation[3]
             ));
         });
     }

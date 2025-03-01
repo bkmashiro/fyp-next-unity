@@ -11,5 +11,13 @@ using UnityEngine.UI;
 
 public class SpatialComment : SpatialObject
 {
+  public override void Load(string data)
+  {
+    throw new NotImplementedException();
+  }
 
+  public override string Serialize()
+  {
+    throw new NotImplementedException();
+  }
 }

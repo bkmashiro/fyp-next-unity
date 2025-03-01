@@ -95,37 +95,37 @@ public class SSApi : MonoBehaviour
         coordinates = new double[] { localPos.x, localPos.y }
       },
       relAltitude = localPos.z,
-      relOrientation = new double[] { localRot.x, localRot.y, localRot.z }
+      relOrientation = new double[] { localRot.x, localRot.y, localRot.z, localRot.w },
     };
 
     return await Post("/geo-image", anchor);
   }
 
-  // [ContextMenu("TestCreateGeoImage")]
-  // public async void TestCreateGeoImage()
-  // {
-  //   var imgKey = (await Upload(ConvertToNonCompressed(testTexture).EncodeToPNG(), "asd.png")).key;
-  //   Debug.Log(imgKey);
-  //   var pose = new GeospatialPose
-  //   {
-  //     Latitude = 31.2304,
-  //     Longitude = 121.4737,
-  //     Altitude = 0,
-  //     EunRotation = new Quaternion(0, 0, 0, 1),
-  //     HorizontalAccuracy = 0,
-  //     VerticalAccuracy = 0,
-  //     OrientationYawAccuracy = 0
-  //   };
+  // cloudAnchorId: string
+  // anchorPosition: number[]
+  public async Task<string> CreateCloudAnchorRecord(string cloudAnchorId, double[] anchorPosition)
+  {
+    var anchor = new
+    {
+      cloudAnchorId,
+      anchorPosition
+    };
 
-  //   await CreateGeoImage(imgKey, new GeoSpatialImageData
-  //   {
-  //     cloudAnchorId = "ua-a965cfb1d5ada10b385a4af58703a88b",
-  //     pose = pose,
-  //     spatialImageGO = testObject,
-  //   });
-  // }
+    return await Post("/cloud-anchor", anchor);
+  }
 
-  // send file via form data
+  public async Task<string> CreateCloudAnchorRecord(string cloudAnchorId, Vector3 anchorPosition)
+  {
+    var anchor = new
+    {
+      cloudAnchorId,
+      // ignore Altitude
+      anchorPosition = new double[] { anchorPosition.x, anchorPosition.z }
+    };
+
+    return await Post("/cloud-anchor", anchor);
+  }
+
   public async Task<UploadResponse> Upload(byte[] data, string fileName)
   {
     var tcs = new TaskCompletionSource<UploadResponse>();
@@ -240,11 +240,21 @@ public class SSApi : MonoBehaviour
     return response;
   }
 
+
+  public async Task<AnchorData[]> GetAnchorsWithin(
+    double latitude, double longitude, double radius)
+  {
+    var response = await Get<
+      AnchorData[]
+    >($"/cloud-anchor/range/{latitude}/{longitude}/{radius}");
+    return response;
+  }
+
   public async Task<GeoImageData> GetGeoObject(string id)
   {
     var response = await Get<GeoImageData>($"/geo-object/{id}");
     return response;
-  } 
+  }
 
   public async void Echo(string msg)
   {
@@ -332,5 +342,13 @@ public class SSApi : MonoBehaviour
     public double RelAltitude { get; set; }
     public double[] RelOrientation { get; set; }
     public OssFile OssFile { get; set; }
+  }
+
+  [Serializable]
+  public class AnchorData
+  {
+    public int id;
+    public string cloudAnchorId;
+    public GeoPoint anchor;
   }
 }

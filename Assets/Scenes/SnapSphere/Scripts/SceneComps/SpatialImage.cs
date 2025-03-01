@@ -11,5 +11,13 @@ using UnityEngine.UI;
 
 public class SpatialImage : SpatialObject
 {
+    public override void Load(string data)
+    {
+        throw new NotImplementedException();
+    }
 
+    public override string Serialize()
+    {
+        throw new NotImplementedException();
+    }
 }

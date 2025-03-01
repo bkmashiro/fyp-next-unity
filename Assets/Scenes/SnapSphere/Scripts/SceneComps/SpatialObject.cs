@@ -7,9 +7,10 @@ using Google.XR.ARCoreExtensions;
 using UnityEngine.Networking;
 using System;
 using UnityEngine.UI;
+using UnityEngine.XR.ARFoundation;
 
 
-public class SpatialObject : MonoBehaviour
+public abstract class SpatialObject : MonoBehaviour
 {
   public GameObject prefab;
   public GameObject instance;
@@ -18,7 +19,7 @@ public class SpatialObject : MonoBehaviour
   public Quaternion rotation { get { return instance.transform.rotation; } set { instance.transform.rotation = value; } }
   public Vector3 scale { get { return instance.transform.localScale; } set { instance.transform.localScale = value; } }
 
-  public void BindToAnchor(Anchor anchor)
+  public void BindToAnchor(ARAnchor anchor)
   {
     instance.transform.SetParent(anchor.transform, false);
   }

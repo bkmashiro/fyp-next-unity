@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections;
 using NUnit.Framework;
 using Google.XR.ARCoreExtensions.Samples.PersistentCloudAnchors;
+using System;
 /// <summary>
 /// All possible error states. Used to inform other components' behaviors.
 /// </summary>
@@ -669,6 +670,28 @@ public class GeospatialManager : MonoBehaviour
 
     public void ResolveCloudAnchor(string cloudAnchorId)
     {
+        if (anchorController.ResolvingSet.Contains(cloudAnchorId))
+        {
+            return;
+        }
+
         anchorController.ResolvingSet.Add(cloudAnchorId);
+    }
+
+    public void ResolveCloudAnchor(string cloudAnchorId, Action<ResolveCloudAnchorResult> onResolved)
+    {
+        ResolveCloudAnchor(cloudAnchorId);
+
+        UnityAction<string, ResolveCloudAnchorResult> callback = null;
+        callback = (id, result) =>
+        {
+            if (id == cloudAnchorId)
+            {
+                OnAnchorResolved.RemoveListener(callback);
+                onResolved(result);
+            }
+        };
+
+        OnAnchorResolved.AddListener(callback);
     }
 }
