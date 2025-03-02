@@ -12,11 +12,12 @@ using UnityEngine.XR.ARFoundation;
 
 public abstract class SpatialObject : MonoBehaviour
 {
-  public GameObject prefab;
+  protected Dictionary<string, object> data;
+
   public GameObject instance;
   public string id;
-  public Vector3 position { get { return instance.transform.position; } set { instance.transform.position = value; } }
-  public Quaternion rotation { get { return instance.transform.rotation; } set { instance.transform.rotation = value; } }
+  public Vector3 position { get { return instance.transform.localPosition; } set { instance.transform.localPosition = value; } }
+  public Quaternion rotation { get { return instance.transform.localRotation; } set { instance.transform.localRotation = value; } }
   public Vector3 scale { get { return instance.transform.localScale; } set { instance.transform.localScale = value; } }
 
   public void BindToAnchor(ARAnchor anchor)
@@ -24,9 +25,48 @@ public abstract class SpatialObject : MonoBehaviour
     instance.transform.SetParent(anchor.transform, false);
   }
 
-  abstract public string Serialize();
-  abstract public void Load(string data);
   virtual public void SaveChanges()
   {
+    if (instance == null)
+    {
+      throw new Exception("Instance is null");
+    }
+
+    // save all changes to the data
+    data["position"] = position;
+    data["rotation"] = rotation;
+    data["scale"] = scale;
+  }
+
+  public void ApplyChanges()
+  {
+    if (instance == null)
+    {
+      throw new Exception("Instance is null");
+    }
+
+    // apply all changes to the instance
+    instance.transform.localPosition = position;
+    instance.transform.localRotation = rotation;
+    instance.transform.localScale = scale;
+  }
+
+  public static async Task<SpatialObject> CreateInstance(Dictionary<string, object> data)
+  {
+    // if data has "type" field, use it to create the instance
+    if (data.ContainsKey("type"))
+    {
+      // type could be "type": "GeoImage", "GeoComment"
+      // we need to create the instance of the type
+      var type = data["type"].ToString();
+      switch (type)
+      {
+        case "GeoImage":
+          return await SpatialImage.CreateInstance(data);
+        case "GeoComment":
+          return await SpatialComment.CreateInstance(data);
+      }
+    }
+    throw new Exception("Invalid type");
   }
 }

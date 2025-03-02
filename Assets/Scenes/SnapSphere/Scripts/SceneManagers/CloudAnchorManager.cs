@@ -3,18 +3,46 @@
 using Google.XR.ARCoreExtensions;
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
-public class CloudAnchorManager
+public class CloudAnchorManager : MonoBehaviour
 {
-  Dictionary<string, CloudAnchor> cloudAnchors = new();
-  public void CreateCloudAnchor(Vector3 position, Quaternion rotation)
+
+  [Serializable]
+  public class PrefabMapEntry
   {
-    CloudAnchor cloudAnchor = new();
-    cloudAnchor.approxPosition = position;
-    cloudAnchor.approxRotation = rotation;
-    cloudAnchor.state = CloudAnchor.CloudAnchorState.Pending;
+    public string name;
+    public GameObject prefab;
+  }
+  [SerializeField]
+  public List<PrefabMapEntry> PrefabMap = new();
+
+  public GameObject GetPrefab(string name)
+  {
+    return PrefabMap.Find(entry => entry.name == name).prefab;
+  }
+
+  [Serializable]
+  public class CreateCloudAnchorData
+  {
+    public string id;
+    public SSApi.GeoPoint position;
+  }
+
+  Dictionary<string, CloudAnchor> cloudAnchors = new();
+  public CloudAnchor CreateCloudAnchor(CreateCloudAnchorData data)
+  {
+    var position = data.position;
+    var coordinates = new float[] { (float)position.Coordinates[0], (float)position.Coordinates[1], 0 };
+    var approxPosition = new Vector3(coordinates[0], coordinates[1], coordinates[2]);
+    CloudAnchor cloudAnchor = new()
+    {
+      id = data.id,
+      state = CloudAnchor.CloudAnchorState.Pending,
+      approxPosition = approxPosition,
+    };
     cloudAnchors.Add(cloudAnchor.id, cloudAnchor);
-    cloudAnchor.ShowGuide();
+    return cloudAnchor;
   }
 
   public CloudAnchor GetCloudAnchor(string id)
@@ -43,10 +71,23 @@ public class CloudAnchor
   public string id;
 
   public Vector3 approxPosition;
-  public Quaternion approxRotation;
+
+  public List<SpatialObject> children = new();
 
   public void ShowGuide()
   {
     // Show guide
   }
+
+  public void AddChild(SpatialObject child)
+  {
+    children.Add(child);
+  }
+
+  public void RemoveChild(SpatialObject child)
+  {
+    children.Remove(child);
+  }
+
+
 }

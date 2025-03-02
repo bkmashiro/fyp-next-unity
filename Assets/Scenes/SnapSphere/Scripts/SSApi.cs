@@ -287,7 +287,7 @@ public class SSApi : MonoBehaviour
     return (localPos, localRot);
   }
 
-  public async Task<GeoObjectData[]>DiscoverAnchor(string anchorId)
+  public async Task<GeoObjectData[]> DiscoverAnchor(string anchorId)
   {
     var response = await Get<GeoObjectData[]>($"/geo-object/anchor/{anchorId}");
     return response;
