@@ -1619,7 +1619,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &866634348
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1655,6 +1655,7 @@ MonoBehaviour:
   GeospatialManager: {fileID: 0}
   SSApi: {fileID: 0}
   Interval: 5
+  DebugText: {fileID: 571963248}
 --- !u!114 &866634350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1987,7 +1988,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1243015684
 RectTransform:
   m_ObjectHideFlags: 0

@@ -1,11 +1,12 @@
 using System.Collections;
 using UnityEngine;
-
+using TMPro;
 public class DiscoverAnchorUI : MonoBehaviour
 {
     public GeospatialManager GeospatialManager;
     public SSApi SSApi;
     public float Interval = 5f;
+    public TextMeshProUGUI DebugText;
     void Start()
     {
         GeospatialManager = FindFirstObjectByType<GeospatialManager>();
@@ -25,20 +26,24 @@ public class DiscoverAnchorUI : MonoBehaviour
 
         foreach (var anchor in anchors)
         {
-            GeospatialManager.ResolveCloudAnchor(anchor.cloudAnchorId, (anchor) =>
+            // This won't resolve duplicates.
+            GeospatialManager.ResolveCloudAnchor(anchor.cloudAnchorId, (ank) =>
             {
-                Debug.Log("Resolved anchor: {anchor.cloudAnchorId}");
+                DebugText.text += $"Resolved anchor: {anchor.cloudAnchorId}\n";
+
+                // load the GeoObjects related to the anchor
+                DiscoverAnchor(anchor.cloudAnchorId);
             });
         }
     }
 
     async void DiscoverAnchor(string anchorId)
     {
-        // var anchor = await SSApi.GetAnchor(anchorId);
-        // GeospatialManager.ResolveCloudAnchor(anchor.cloudAnchorId, (anchor) =>
-        // {
-        //     Debug.Log("Resolved anchor: {anchor.cloudAnchorId}");
-        // });
+        var geoObjects = await SSApi.DiscoverAnchor(anchorId);
+        foreach (var geoObject in geoObjects)
+        {
+            DebugText.text += $"Discovering GeoObject: {geoObject.Id}\n";
+        }
     }
 
     IEnumerator RepeatFunction(float interval, System.Action function)

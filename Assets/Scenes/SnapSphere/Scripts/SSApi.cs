@@ -287,6 +287,12 @@ public class SSApi : MonoBehaviour
     return (localPos, localRot);
   }
 
+  public async Task<GeoObjectData[]>DiscoverAnchor(string anchorId)
+  {
+    var response = await Get<GeoObjectData[]>($"/geo-object/anchor/{anchorId}");
+    return response;
+  }
+
   [Serializable]
   public class UploadResponse
   {
@@ -325,7 +331,7 @@ public class SSApi : MonoBehaviour
     public object DeletedAt { get; set; }
   }
   [Serializable]
-  public class GeoImageData
+  public class GeoObjectData
   {
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
@@ -341,6 +347,11 @@ public class SSApi : MonoBehaviour
     public GeoPoint RelPosition { get; set; }
     public double RelAltitude { get; set; }
     public double[] RelOrientation { get; set; }
+  }
+
+  [Serializable]
+  public class GeoImageData : GeoObjectData
+  {
     public OssFile OssFile { get; set; }
   }
 
