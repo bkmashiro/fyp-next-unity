@@ -30,6 +30,7 @@ public class CloudAnchorManager : MonoBehaviour
   }
 
   Dictionary<string, CloudAnchor> cloudAnchors = new();
+  // for debug
   public CloudAnchor CreateCloudAnchor(CreateCloudAnchorData data)
   {
     var position = data.position;
@@ -55,6 +56,16 @@ public class CloudAnchorManager : MonoBehaviour
     return cloudAnchors[id];
   }
 
+  public void AddResolvedAnchor(string id, ARCloudAnchor cloudAnchor)
+  {
+    var anchor = new CloudAnchor()
+    {
+      id = id,
+      state = CloudAnchor.CloudAnchorState.Resolved,
+      cloudAnchor = cloudAnchor,
+    };
+    cloudAnchors.Add(id, anchor);
+  }
 }
 
 public class CloudAnchor

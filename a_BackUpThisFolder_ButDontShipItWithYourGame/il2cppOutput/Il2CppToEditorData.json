@@ -2,10 +2,6 @@
   "Messages": [
     {
       "Type": 0,
-      "Text": "[UnityEngine.TextCoreTextEngineModule] - System.Void UnityEngine.TextCore.Text.TextGeneratorUtilities::.cctor() - Method was given it\u0027s own cpp file because it is large and costly to compile"
-    },
-    {
-      "Type": 0,
       "Text": "[Unity.TextMeshPro] - System.Void TMPro.TextMeshPro::GenerateTextMesh() - Method was given it\u0027s own cpp file because it is large and costly to compile"
     },
     {
@@ -18,39 +14,51 @@
     },
     {
       "Type": 0,
-      "Text": "[Unity.InputSystem] - System.Void UnityEngine.InputSystem.FastTouchscreen::.ctor() - High Variable Count of 314"
+      "Text": "[UnityEngine.TextCoreTextEngineModule] - System.Void UnityEngine.TextCore.Text.TextGeneratorUtilities::.cctor() - Method was given it\u0027s own cpp file because it is large and costly to compile"
     },
     {
       "Type": 0,
-      "Text": "[Unity.TextMeshPro] - System.Void TMPro.TextMeshPro::GenerateTextMesh() - High Variable Count of 216"
+      "Text": "[Unity.TextMeshPro] - System.Void TMPro.TextMeshPro::GenerateTextMesh() - High Variable Count of 489"
     },
     {
       "Type": 0,
-      "Text": "[Unity.TextMeshPro] - System.Void TMPro.TextMeshPro::GenerateTextMesh() - High Instruction Count of 9682"
+      "Text": "[Unity.TextMeshPro] - System.Void TMPro.TextMeshPro::GenerateTextMesh() - High Instruction Count of 13874"
     },
     {
       "Type": 0,
-      "Text": "[Unity.TextMeshPro] - System.Void TMPro.TextMeshPro::GenerateTextMesh() - High CodeSize of 29729"
+      "Text": "[Unity.TextMeshPro] - System.Void TMPro.TextMeshPro::GenerateTextMesh() - High CodeSize of 38077"
     },
     {
       "Type": 0,
-      "Text": "[Unity.TextMeshPro] - System.Void TMPro.TextMeshProUGUI::GenerateTextMesh() - High Variable Count of 221"
+      "Text": "[Unity.TextMeshPro] - System.Void TMPro.TextMeshProUGUI::GenerateTextMesh() - High Variable Count of 498"
     },
     {
       "Type": 0,
-      "Text": "[Unity.TextMeshPro] - System.Void TMPro.TextMeshProUGUI::GenerateTextMesh() - High Instruction Count of 9773"
+      "Text": "[Unity.TextMeshPro] - System.Void TMPro.TextMeshProUGUI::GenerateTextMesh() - High Instruction Count of 14031"
     },
     {
       "Type": 0,
-      "Text": "[Unity.TextMeshPro] - System.Void TMPro.TextMeshProUGUI::GenerateTextMesh() - High CodeSize of 30008"
+      "Text": "[Unity.TextMeshPro] - System.Void TMPro.TextMeshProUGUI::GenerateTextMesh() - High CodeSize of 38481"
     },
     {
       "Type": 0,
-      "Text": "[Unity.TextMeshPro] - System.Void TMPro.TMP_TextParsingUtilities::.cctor() - High Instruction Count of 10579"
+      "Text": "[Unity.TextMeshPro] - System.Boolean TMPro.TMP_Text::ValidateHtmlTag(TMPro.TMP_Text/TextProcessingElement[],System.Int32,System.Int32\u0026) - High Variable Count of 224"
     },
     {
       "Type": 0,
-      "Text": "[Unity.TextMeshPro] - System.Void TMPro.TMP_TextParsingUtilities::.cctor() - High CodeSize of 31711"
+      "Text": "[Unity.TextMeshPro] - System.Boolean TMPro.TMP_Text::ValidateHtmlTag(TMPro.TMP_Text/TextProcessingElement[],System.Int32,System.Int32\u0026) - High Instruction Count of 5713"
+    },
+    {
+      "Type": 0,
+      "Text": "[Unity.TextMeshPro] - System.Boolean TMPro.TMP_Text::ValidateHtmlTag(TMPro.TMP_Text/TextProcessingElement[],System.Int32,System.Int32\u0026) - High CodeSize of 16644"
+    },
+    {
+      "Type": 0,
+      "Text": "[Unity.TextMeshPro] - System.Void TMPro.TMP_TextParsingUtilities::.cctor() - High Instruction Count of 10580"
+    },
+    {
+      "Type": 0,
+      "Text": "[Unity.TextMeshPro] - System.Void TMPro.TMP_TextParsingUtilities::.cctor() - High CodeSize of 31712"
     },
     {
       "Type": 0,
@@ -87,6 +95,10 @@
     {
       "Type": 0,
       "Text": "[UnityEngine.TextCoreTextEngineModule] - System.Void UnityEngine.TextCore.Text.TextGeneratorUtilities::.cctor() - High CodeSize of 31741"
+    },
+    {
+      "Type": 0,
+      "Text": "[Unity.InputSystem] - System.Void UnityEngine.InputSystem.FastTouchscreen::.ctor() - High Variable Count of 315"
     },
     {
       "Type": 0,

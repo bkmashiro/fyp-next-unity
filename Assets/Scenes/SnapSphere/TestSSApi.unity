@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9792d470dabf684f94e19bc6bdd23d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ServerUrl: http://localhost:3001
+  ServerUrl: http://localhost:3001/api
   testTexture: {fileID: 2800000, guid: adbd09acc8e0b8347b4db4e5d286eb4f, type: 3}
   testObject: {fileID: 0}
 --- !u!4 &609189228

@@ -1,15 +1,20 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Newtonsoft.Json;
+
 public class DiscoverAnchorUI : MonoBehaviour
 {
     public GeospatialManager GeospatialManager;
+    public CloudAnchorManager CloudAnchorManager;
     public SSApi SSApi;
     public float Interval = 5f;
     public TextMeshProUGUI DebugText;
     void Start()
     {
         GeospatialManager = FindFirstObjectByType<GeospatialManager>();
+        CloudAnchorManager = FindFirstObjectByType<CloudAnchorManager>();
         SSApi = FindFirstObjectByType<SSApi>();
 
         StartCoroutine(RepeatFunction(Interval, CheckNearbyAnchors));
@@ -30,7 +35,7 @@ public class DiscoverAnchorUI : MonoBehaviour
             GeospatialManager.ResolveCloudAnchor(anchor.cloudAnchorId, (ank) =>
             {
                 DebugText.text += $"Resolved anchor: {anchor.cloudAnchorId}\n";
-
+                CloudAnchorManager.AddResolvedAnchor(anchor.cloudAnchorId, ank.Anchor);
                 // load the GeoObjects related to the anchor
                 DiscoverAnchor(anchor.cloudAnchorId);
             });
@@ -42,7 +47,11 @@ public class DiscoverAnchorUI : MonoBehaviour
         var geoObjects = await SSApi.DiscoverAnchor(anchorId);
         foreach (var geoObject in geoObjects)
         {
-            DebugText.text += $"Discovering GeoObject: {geoObject.Id}\n";
+            DebugText.text += $"Discovering GeoObject: {geoObject["id"]}\n";
+            // var spatialObject = await SpatialObject.CreateInstance(geoObject);
+            var anchor = CloudAnchorManager.GetCloudAnchor(anchorId);
+            var spatialObject = await SpatialImage.CreateInstanceWithRelativePosition(geoObject, anchor.cloudAnchor.transform);
+            spatialObject.transform.SetParent(this.transform);
         }
     }
 

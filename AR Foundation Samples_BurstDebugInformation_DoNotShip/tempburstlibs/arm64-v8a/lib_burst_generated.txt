@@ -9,6 +9,7 @@ Library: D:\fyp\arfoundation-samples\Temp\BurstOutput\tempburstlibs\arm64-v8a\li
 --target-framework=NetFramework
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=D:\fyp\arfoundation-samples\Temp\Burst
+--debug=Full
 --key-folder=D:/unity/editors/6000.0.15f1/Editor/Data/PlaybackEngines/AndroidPlayer
 --decode-folder=D:\fyp\arfoundation-samples\Library\Burst
 --output=D:\fyp\arfoundation-samples\Temp\BurstOutput\tempburstlibs\arm64-v8a\lib_burst_generated
@@ -93,6 +94,7 @@ Library: D:\fyp\arfoundation-samples\Temp\BurstOutput\tempburstlibs\arm64-v8a\li
 --float-mode=Fast
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=D:\fyp\arfoundation-samples\Temp\Burst
+--debug=Full
 --key-folder=D:/unity/editors/6000.0.15f1/Editor/Data/PlaybackEngines/AndroidPlayer
 --decode-folder=D:\fyp\arfoundation-samples\Library\Burst
 --output=D:\fyp\arfoundation-samples\Temp\BurstOutput\tempburstlibs\arm64-v8a\lib_burst_generated
@@ -110,6 +112,7 @@ Library: D:\fyp\arfoundation-samples\Temp\BurstOutput\tempburstlibs\arm64-v8a\li
 --target-framework=NetFramework
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=D:\fyp\arfoundation-samples\Temp\Burst
+--debug=Full
 --key-folder=D:/unity/editors/6000.0.15f1/Editor/Data/PlaybackEngines/AndroidPlayer
 --decode-folder=D:\fyp\arfoundation-samples\Library\Burst
 --output=D:\fyp\arfoundation-samples\Temp\BurstOutput\tempburstlibs\arm64-v8a\lib_burst_generated

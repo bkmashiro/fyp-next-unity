@@ -8,6 +8,7 @@ using Google.XR.ARCoreExtensions;
 using UnityEngine.Networking;
 using System;
 using UnityEngine.UI;
+using Newtonsoft.Json.Linq;
 
 public class SSApi : MonoBehaviour
 {
@@ -96,6 +97,7 @@ public class SSApi : MonoBehaviour
       },
       relAltitude = localPos.z,
       relOrientation = new double[] { localRot.x, localRot.y, localRot.z, localRot.w },
+      scale = new double[] { data.spatialImageGO.transform.localScale.x, data.spatialImageGO.transform.localScale.y, data.spatialImageGO.transform.localScale.z }
     };
 
     return await Post("/geo-image", anchor);
@@ -287,9 +289,9 @@ public class SSApi : MonoBehaviour
     return (localPos, localRot);
   }
 
-  public async Task<GeoObjectData[]> DiscoverAnchor(string anchorId)
+  public async Task<Dictionary<string, object>[]> DiscoverAnchor(string anchorId)
   {
-    var response = await Get<GeoObjectData[]>($"/geo-object/anchor/{anchorId}");
+    var response = await Get<Dictionary<string, object>[]>($"/geo-object/anchor/{anchorId}");
     return response;
   }
 
@@ -330,6 +332,32 @@ public class SSApi : MonoBehaviour
     public string MimeType { get; set; }
     public object DeletedAt { get; set; }
   }
+
+  public class GeoObjectConverter : JsonConverter
+  {
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    {
+      JObject jo = JObject.Load(reader);
+      if (jo["type"]?.ToString() == "GeoImage")
+      {
+        return jo.ToObject<GeoImageData>(serializer);
+      }
+      return jo.ToObject<GeoObjectData>(serializer);
+    }
+    
+    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+    {
+        JObject jo = JObject.FromObject(value, serializer);
+        jo.WriteTo(writer);
+    }
+
+    public override bool CanConvert(Type objectType)
+    {
+        return objectType == typeof(GeoObjectData) || objectType == typeof(GeoImageData);
+    }
+  }
+
+  [JsonConverter(typeof(GeoObjectConverter))]
   [Serializable]
   public class GeoObjectData
   {
@@ -361,5 +389,11 @@ public class SSApi : MonoBehaviour
     public int id;
     public string cloudAnchorId;
     public GeoPoint anchor;
+  }
+
+  public async Task<Dictionary<string, object>[]> GetGeoObjects()
+  {
+    var response = await Get<Dictionary<string, object>[]>("/geo-objects");
+    return response;
   }
 }
