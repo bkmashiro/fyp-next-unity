@@ -969,7 +969,9 @@
           },
           {
             "name": "SphereCollider",
-            "scenes": [],
+            "scenes": [
+              "Assets/Scenes/SnapSphere/CreateAnchor.unity"
+            ],
             "dependencyType": 0,
             "icon": null
           },

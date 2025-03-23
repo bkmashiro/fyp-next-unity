@@ -65,7 +65,7 @@ public class SpatialComment : SpatialObject
     spatialComment.scale = new Vector3(scale[0], scale[1], scale[2]);
 
     // Set text to TextMeshPro component
-    var textMeshPro = instance.transform.GetChild(0).GetComponentInChildren<TMPro.TextMeshProUGUI>();
+    var textMeshPro = instance.transform.GetChild(0).GetComponentInChildren<TMPro.TextMeshPro>();
     if (textMeshPro != null)
     {
       textMeshPro.text = spatialComment.text;
@@ -89,7 +89,7 @@ public class SpatialComment : SpatialObject
     spatialComment.id = data["id"].ToString();
     Debug.Log($"SpatialComment id: {spatialComment.id}"); 
     spatialComment.text = data["text"].ToString();
-
+    Debug.Log($"SpatialComment text: {spatialComment.text}");
     // Set parent to anchor transform
     instance.transform.parent = anchorTransform;
 
@@ -116,7 +116,7 @@ public class SpatialComment : SpatialObject
     instance.transform.localScale = new Vector3(scale[0], scale[1], scale[2]);
 
     // Set text to TextMeshPro component
-    var textMeshPro = instance.transform.GetChild(0).GetComponentInChildren<TMPro.TextMeshProUGUI>();
+    var textMeshPro = instance.transform.GetChild(0).GetComponentInChildren<TMPro.TextMeshPro>();
     if (textMeshPro != null)
     {
       textMeshPro.text = spatialComment.text;
