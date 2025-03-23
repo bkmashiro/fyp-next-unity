@@ -30,7 +30,7 @@ public class SpatialComment : SpatialObject
 
   public static async Task<SpatialComment> CreateInstance(Dictionary<string, object> data)
   {
-    var instance = Instantiate(FindFirstObjectByType<CloudAnchorManager>().GetPrefab("SpatialComment"));
+    var instance = Instantiate(FindFirstObjectByType<CloudAnchorManager>().GetPrefab("GeoComment"));
     var spatialComment = instance.GetComponentInChildren<SpatialComment>();
     spatialComment.data = data;
     spatialComment.cloudAnchorId = ((Newtonsoft.Json.Linq.JObject)data["cloudAnchor"])["cloudAnchorId"].ToString();
@@ -65,7 +65,7 @@ public class SpatialComment : SpatialObject
     spatialComment.scale = new Vector3(scale[0], scale[1], scale[2]);
 
     // Set text to TextMeshPro component
-    var textMeshPro = instance.GetComponentInChildren<TextMeshPro>();
+    var textMeshPro = instance.transform.GetChild(0).GetComponentInChildren<TMPro.TextMeshProUGUI>();
     if (textMeshPro != null)
     {
       textMeshPro.text = spatialComment.text;
@@ -82,11 +82,12 @@ public class SpatialComment : SpatialObject
   {
     Debug.Log($"Creating instance with relative position, data: {Newtonsoft.Json.JsonConvert.SerializeObject(data)}");
 
-    var instance = Instantiate(FindFirstObjectByType<CloudAnchorManager>().GetPrefab("SpatialComment"));
+    var instance = Instantiate(FindFirstObjectByType<CloudAnchorManager>().GetPrefab("GeoComment"));
     var spatialComment = instance.GetComponentInChildren<SpatialComment>();
     spatialComment.data = data;
     spatialComment.cloudAnchorId = ((Newtonsoft.Json.Linq.JObject)data["cloudAnchor"])["cloudAnchorId"].ToString();
     spatialComment.id = data["id"].ToString();
+    Debug.Log($"SpatialComment id: {spatialComment.id}"); 
     spatialComment.text = data["text"].ToString();
 
     // Set parent to anchor transform
@@ -115,7 +116,7 @@ public class SpatialComment : SpatialObject
     instance.transform.localScale = new Vector3(scale[0], scale[1], scale[2]);
 
     // Set text to TextMeshPro component
-    var textMeshPro = instance.GetComponentInChildren<TextMeshPro>();
+    var textMeshPro = instance.transform.GetChild(0).GetComponentInChildren<TMPro.TextMeshProUGUI>();
     if (textMeshPro != null)
     {
       textMeshPro.text = spatialComment.text;

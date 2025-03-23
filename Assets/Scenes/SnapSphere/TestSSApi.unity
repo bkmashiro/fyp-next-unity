@@ -193,8 +193,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PrefabMap:
-  - name: SpatialImage
+  - name: GeoImage
     prefab: {fileID: 6110070971613505031, guid: 04abea835a3bd3b4f93b3637ff482551,
+      type: 3}
+  - name: GeoComment
+    prefab: {fileID: 5376793589512574799, guid: 1ed8d4a1eda5b864bb671a62f3e0bcea,
       type: 3}
 --- !u!1 &777757269
 GameObject:

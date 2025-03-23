@@ -4,6 +4,7 @@ using Google.XR.ARCoreExtensions;
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 public class CloudAnchorManager : MonoBehaviour
 {
@@ -19,7 +20,20 @@ public class CloudAnchorManager : MonoBehaviour
 
   public GameObject GetPrefab(string name)
   {
-    return PrefabMap.Find(entry => entry.name == name).prefab;
+
+    var entry = PrefabMap.Find(entry => entry.name == name);
+    if (entry == null)
+    {
+      Debug.LogError("Prefab not found: " + name);
+      // available prefabs
+      foreach (var prefab in PrefabMap)
+      {
+        Debug.Log(prefab.name);
+      }
+      return null;
+    }
+
+    return entry.prefab;
   }
 
   [Serializable]
@@ -65,6 +79,14 @@ public class CloudAnchorManager : MonoBehaviour
       cloudAnchor = cloudAnchor,
     };
     cloudAnchors.Add(id, anchor);
+  }
+
+  public CloudAnchor GetClosestAnchor(Vector3 position)
+  {
+    // get all resolved anchors
+    var resolvedAnchors = cloudAnchors.Values.Where(anchor => anchor.state == CloudAnchor.CloudAnchorState.Resolved).ToList();
+    // get the closest anchor
+    return resolvedAnchors.OrderBy(anchor => Vector3.Distance(anchor.cloudAnchor.transform.position, position)).FirstOrDefault();
   }
 }
 

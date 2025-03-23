@@ -50,7 +50,9 @@ public class DiscoverAnchorUI : MonoBehaviour
             DebugText.text += $"Discovering GeoObject: {geoObject["id"]}\n";
             // var spatialObject = await SpatialObject.CreateInstance(geoObject);
             var anchor = CloudAnchorManager.GetCloudAnchor(anchorId);
-            var spatialObject = await SpatialImage.CreateInstanceWithRelativePosition(geoObject, anchor.cloudAnchor.transform);
+            // var spatialObject = await SpatialImage.CreateInstanceWithRelativePosition(geoObject, anchor.cloudAnchor.transform);
+            var spatialObject = await SpatialObject.CreateInstanceWithRelativePosition(geoObject, anchor.cloudAnchor.transform);
+
             spatialObject.transform.SetParent(this.transform);
         }
     }

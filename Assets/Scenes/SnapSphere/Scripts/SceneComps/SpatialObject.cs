@@ -14,9 +14,13 @@ public abstract class SpatialObject : MonoBehaviour
 {
   protected Dictionary<string, object> data;
 
-  public GameObject instance { get {
-    return this.gameObject;
-  }}
+  public GameObject instance
+  {
+    get
+    {
+      return this.gameObject;
+    }
+  }
   public string id;
   public Vector3 position { get { return instance.transform.localPosition; } set { instance.transform.localPosition = value; } }
   public Quaternion rotation { get { return instance.transform.localRotation; } set { instance.transform.localRotation = value; } }
@@ -61,13 +65,33 @@ public abstract class SpatialObject : MonoBehaviour
       // type could be "type": "GeoImage", "GeoComment"
       // we need to create the instance of the type
       var type = data["type"].ToString();
-      Debug.Log("Creating instance type: " + type); 
+      Debug.Log("Creating instance type: " + type);
       switch (type)
       {
         case "GeoImage":
           return await SpatialImage.CreateInstance(data);
         case "GeoComment":
           return await SpatialComment.CreateInstance(data);
+      }
+    }
+    throw new Exception("Invalid type");
+  }
+
+  public static async Task<SpatialObject> CreateInstanceWithRelativePosition(Dictionary<string, object> data, Transform parent)
+  {
+    // if data has "type" field, use it to create the instance
+    if (data.ContainsKey("type"))
+    {
+      // type could be "type": "GeoImage", "GeoComment"
+      // we need to create the instance of the type
+      var type = data["type"].ToString();
+      Debug.Log("Creating instance type: " + type);
+      switch (type)
+      {
+        case "GeoImage":
+          return await SpatialImage.CreateInstanceWithRelativePosition(data, parent);
+        case "GeoComment":
+          return await SpatialComment.CreateInstanceWithRelativePosition(data, parent);
       }
     }
     throw new Exception("Invalid type");

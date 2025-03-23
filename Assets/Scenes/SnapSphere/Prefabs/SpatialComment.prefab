@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4459592342150143771}
   - component: {fileID: 7351098226525773218}
   - component: {fileID: 427043602049445829}
+  - component: {fileID: 7943803825504036401}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -26,9 +27,9 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3012645373683940480}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2469631643088309231}
@@ -36,9 +37,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 1325.25, y: 648.75}
+  m_SizeDelta: {x: 2650.5, y: 1297.5}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &4459592342150143771
 Canvas:
   m_ObjectHideFlags: 0
@@ -48,7 +49,7 @@ Canvas:
   m_GameObject: {fileID: 3012645373683940480}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
+  m_RenderMode: 2
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -84,7 +85,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &427043602049445829
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102,6 +103,21 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &7943803825504036401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3012645373683940480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83dbb376cb2c6e64c82484bedbb9a200, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 
+  text: 
+  cloudAnchorId: 
 --- !u!1 &5376793589512574799
 GameObject:
   m_ObjectHideFlags: 0

@@ -396,4 +396,67 @@ public class SSApi : MonoBehaviour
     var response = await Get<Dictionary<string, object>[]>("/geo-objects");
     return response;
   }
+
+  public async Task<string> CreateGeoComment(string text, GeoSpatialCommentData data)
+  {
+    var pose = data.pose;
+    var (localPos, localRot) = ConvertToLocalTransform(data.spatialCommentGO.transform, data.anchor.transform);
+    var comment = new
+    {
+      text = text,
+      position = new
+      {
+        type = "Point",
+        coordinates = new double[] { pose.Longitude, pose.Latitude }
+      },
+      altitude = pose.Altitude,
+      orientation = new double[] { pose.EunRotation.x, pose.EunRotation.y, pose.EunRotation.z, pose.EunRotation.w },
+      cloudAnchorId = data.cloudAnchorId,
+      metadata = new Dictionary<string, object>
+      {
+        { "HorizontalAccuracy", pose.HorizontalAccuracy },
+        { "VerticalAccuracy", pose.VerticalAccuracy },
+        { "OrientationYawAccuracy", pose.OrientationYawAccuracy },
+      },
+      relPosition = new
+      {
+        type = "Point",
+        coordinates = new double[] { localPos.x, localPos.y }
+      },
+      relAltitude = localPos.z,
+      relOrientation = new double[] { localRot.x, localRot.y, localRot.z, localRot.w },
+      scale = new double[] { data.spatialCommentGO.transform.localScale.x, data.spatialCommentGO.transform.localScale.y, data.spatialCommentGO.transform.localScale.z }
+    };
+
+    return await Post("/geo-comment", comment);
+  }
+
+  public async Task SaveGeoSpatialComment(GeoSpatialCommentData geoSpatialComment)
+  {
+    var commentId = await CreateGeoComment(geoSpatialComment.text, geoSpatialComment);
+    Debug.Log($"Created geo comment: {commentId}");
+  }
+
+  public async Task<GeoCommentData[]> GetGeoCommentsWithin(
+    double latitude, double longitude, double radius)
+  {
+    var response = await Get<GeoCommentData[]>($"/geo-comment/range/{latitude}/{longitude}/{radius}");
+    return response;
+  }
+
+  [Serializable]
+  public class GeoSpatialCommentData
+  {
+    public GameObject spatialCommentGO;
+    public Transform anchor;
+    public GeospatialPose pose;
+    public string cloudAnchorId;
+    public string text;
+  }
+
+  [Serializable]
+  public class GeoCommentData : GeoObjectData
+  {
+    public string Text { get; set; }
+  }
 }

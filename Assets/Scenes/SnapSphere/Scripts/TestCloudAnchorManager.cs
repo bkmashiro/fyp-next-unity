@@ -17,75 +17,61 @@ public class TestCloudAnchorManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
     string testSOData = @"{
-        ""type"": ""GeoImage"",
-        ""createdAt"": ""2025-03-02T14:49:39.463Z"",
-        ""updatedAt"": ""2025-03-02T14:49:39.463Z"",
-        ""id"": ""f73ee6fd-c4ad-496e-a74a-ae59cf58a9d2"",
-        ""position"": {
-            ""type"": ""Point"",
-            ""coordinates"": [
-                -7.11775526,
-                52.252268956
-            ]
-        },
-        ""altitude"": 68.69302405230701,
-        ""orientation"": [
-            -0.03982938081026077,
-            -0.9394129514694214,
-            0.3197208046913147,
-            -0.11702785640954971
-        ],
-        ""scale"": [
-            1,
-            1,
-            1
-        ],
+    ""position"": {
+        ""type"": ""Point"",
+        ""coordinates"": [
+            -7.117679275,
+            52.252333805
+        ]
+    },
+    ""altitude"": 68.32999621424824,
+    ""orientation"": [
+        -0.11117800325155258,
+        -0.8738502264022827,
+        0.23719695210456848,
+        -0.40958860516548157
+    ],
+    ""scale"": [
+        1,
+        1,
+        1
+    ],
+    ""relPosition"": {
+        ""type"": ""Point"",
+        ""coordinates"": [
+            -7.117679275,
+            52.252333805
+        ]
+    },
+    ""relAltitude"": 68.32999621424824,
+    ""relOrientation"": [
+        -0.11117800325155258,
+        -0.8738502264022827,
+        0.23719695210456848,
+        -0.40958860516548157
+    ],
+    ""cloudAnchor"": {
+        ""id"": 9,
+        ""cloudAnchorId"": ""ua-09f32b406cc8decf3489852ef90900df"",
         ""anchor"": {
             ""type"": ""Point"",
             ""coordinates"": [
-                0,
-                0
+                0.201530591,
+                0.405349851
             ]
-        },
-        ""anchor_latitude"": 0,
-        ""metadata"": ""{\""HorizontalAccuracy\"":41.93200969684763,\""VerticalAccuracy\"":1.652525766476299,\""OrientationYawAccuracy\"":23.66068107237971}"",
-        ""relPosition"": {
-            ""type"": ""Point"",
-            ""coordinates"": [
-                -0.30226469,
-                0.897665203
-            ]
-        },
-        ""relAltitude"": 0.112695023,
-        ""relOrientation"": [
-            0.30140209197998047,
-            -0.33569270372390747,
-            0.11496134102344513,
-            0.8850146532058716
-        ],
-        ""cloudAnchor"": {
-            ""id"": 3,
-            ""cloudAnchorId"": ""ua-fcc782fca8659eb672783225b19dc8c5"",
-            ""anchor"": {
-                ""type"": ""Point"",
-                ""coordinates"": [
-                    1.848609209,
-                    0.149961382
-                ]
-            }
-        },
-        ""ossFile"": {
-            ""createdAt"": ""2025-03-02T14:49:39.282Z"",
-            ""updatedAt"": ""2025-03-02T14:49:39.282Z"",
-            ""key"": ""03a33b30-0f2f-451e-a589-856f6f172095.png"",
-            ""originalName"": ""ua-fcc782fca8659eb672783225b19dc8c5.png"",
-            ""size"": 427762,
-            ""mimeType"": ""image/png"",
-            ""deletedAt"": null
         }
-    }";
+    },
+    ""metadata"": null,
+    ""text"": ""asdsadasdasd"",
+    ""createdAt"": ""2025-03-23T16:41:48.598Z"",
+    ""updatedAt"": ""2025-03-23T16:41:48.598Z"",
+    ""id"": ""8bf8c548-9cd6-42bb-8044-ac621f40ac9e"",
+    ""anchor"": ""0101000020E610000000000000000000000000000000000000"",
+    ""anchor_latitude"": 0,
+    ""type"": ""GeoComment"",
+}";
     string testAnchorData = @"{
-        ""id"": ""f73ee6fd-c4ad-496e-a74a-ae59cf58a9d2"",
+        ""id"": ""ua-09f32b406cc8decf3489852ef90900df"",
         ""position"": {
             ""type"": ""Point"",
             ""coordinates"": [

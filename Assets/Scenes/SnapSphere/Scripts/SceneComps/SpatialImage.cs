@@ -21,7 +21,7 @@ public class SpatialImage : SpatialObject
 
     public static new async Task<SpatialImage> CreateInstance(Dictionary<string, object> data)
     {
-        var instance = Instantiate(FindFirstObjectByType<CloudAnchorManager>().GetPrefab("SpatialImage"));
+        var instance = Instantiate(FindFirstObjectByType<CloudAnchorManager>().GetPrefab("GeoImage"));
 
         var spatialImage = instance.GetComponentInChildren<SpatialImage>();
         spatialImage.data = data;
@@ -67,7 +67,7 @@ public class SpatialImage : SpatialObject
     {
         Debug.Log($"Creating instance with relative position, data: {Newtonsoft.Json.JsonConvert.SerializeObject(data)}");
 
-        var instance = Instantiate(FindFirstObjectByType<CloudAnchorManager>().GetPrefab("SpatialImage"));
+        var instance = Instantiate(FindFirstObjectByType<CloudAnchorManager>().GetPrefab("GeoImage"));
         var spatialImage = instance.GetComponentInChildren<SpatialImage>();
         spatialImage.data = data;
         spatialImage.cloudAnchorId = ((Newtonsoft.Json.Linq.JObject)data["cloudAnchor"])["cloudAnchorId"].ToString();
