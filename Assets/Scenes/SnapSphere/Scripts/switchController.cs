@@ -34,6 +34,20 @@ public class switchController : MonoBehaviour
         // 启用下一个面板
         panels[currentPanelIndex].SetActive(true);
     }
+    public void SelectPanel(int index)
+    {
+        // Check if index is valid
+        if (index < 0 || index >= panels.Count) return;
+
+        // Disable current panel
+        panels[currentPanelIndex].SetActive(false);
+
+        // Update current index
+        currentPanelIndex = index;
+
+        // Enable selected panel
+        panels[currentPanelIndex].SetActive(true);
+    }
 
     // Update is called once per frame
     void Update()
