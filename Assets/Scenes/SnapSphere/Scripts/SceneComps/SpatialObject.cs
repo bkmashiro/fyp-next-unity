@@ -12,8 +12,8 @@ using UnityEngine.XR.ARFoundation;
 
 public abstract class SpatialObject : MonoBehaviour
 {
-  protected Dictionary<string, object> data;
-
+  public Dictionary<string, object> data;
+  public Scene parentScene = null;
   public GameObject instance
   {
     get
@@ -95,5 +95,27 @@ public abstract class SpatialObject : MonoBehaviour
       }
     }
     throw new Exception("Invalid type");
+  }
+
+  public void Start()
+  {
+    initHashCode = GetHashCode();
+  }
+
+  private int initHashCode = 0;
+  public override int GetHashCode()
+  {
+    return data.GetHashCode();
+  }
+
+  public bool IsHashChanged { get { return GetHashCode() != initHashCode; } }
+
+  public Task<Dictionary<string, object>> Sync()
+  {
+    if (IsHashChanged)
+    {
+      return parentScene.SaveObject(this);
+    }
+    return Task.FromResult(this.data);
   }
 }

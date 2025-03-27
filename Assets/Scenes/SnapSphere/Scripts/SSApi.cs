@@ -344,16 +344,16 @@ public class SSApi : MonoBehaviour
       }
       return jo.ToObject<GeoObjectData>(serializer);
     }
-    
+
     public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
     {
-        JObject jo = JObject.FromObject(value, serializer);
-        jo.WriteTo(writer);
+      JObject jo = JObject.FromObject(value, serializer);
+      jo.WriteTo(writer);
     }
 
     public override bool CanConvert(Type objectType)
     {
-        return objectType == typeof(GeoObjectData) || objectType == typeof(GeoImageData);
+      return objectType == typeof(GeoObjectData) || objectType == typeof(GeoImageData);
     }
   }
 
@@ -441,6 +441,15 @@ public class SSApi : MonoBehaviour
     double latitude, double longitude, double radius)
   {
     var response = await Get<GeoCommentData[]>($"/geo-comment/range/{latitude}/{longitude}/{radius}");
+    return response;
+  }
+
+  public async Task<Dictionary<string, object>> UpdateObject(string id, Dictionary<string, object> data)
+  {
+    var response = await Post<Dictionary<string, object>, Dictionary<string, object>>($"/geo-object/{id}", new Dictionary<string, object>{
+      {"id", id},
+      {"data", data}
+    });
     return response;
   }
 
