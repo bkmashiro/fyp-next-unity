@@ -11,14 +11,17 @@ using UnityEngine.XR.ARSubsystems;
 
 public class MainUI : MonoBehaviour
 {
+
+    private Scene scene;
     private GeospatialManager GeospatialManager;
     private CloudAnchorManager CloudAnchorManager;
     private SSApi SSApi;
-    public float Interval = 5f;
+    public float DiscoverInterval = 5f;
+    public float AutoSaveInterval = 15f;
     public TextMeshProUGUI DebugText;
     public TextMeshProUGUI HintText;
 
-    ARAnchor _anchor;
+    private ARAnchor _anchor;
     private MapQualityIndicator qualityIndicator;
     private GeoSpatialImageData geoSpatialImage = new();
     private GameObject currentCommentGO;
@@ -29,6 +32,13 @@ public class MainUI : MonoBehaviour
     public GameObject spatialCommentPrefab;
     public TMP_InputField commentInput;
 
+    public GameObject cameraModeComp;
+    public GameObject cursorModeComp;
+    public GameObject commentModeComp;
+    public GameObject anchorModeComp;
+    public GameObject toolsPanel;
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -36,7 +46,16 @@ public class MainUI : MonoBehaviour
         CloudAnchorManager = FindFirstObjectByType<CloudAnchorManager>();
         SSApi = FindFirstObjectByType<SSApi>();
 
-        StartCoroutine(RepeatFunction(Interval, CheckNearbyAnchors));
+        SetTool(Tool.Cursor);
+
+        //add component Scene to the scene
+        var scene = new GameObject("DefaultScene");
+        scene.AddComponent<Scene>();
+        scene.transform.SetParent(this.transform);
+        this.scene = scene.GetComponent<Scene>();
+
+        StartCoroutine(RepeatFunction(DiscoverInterval, CheckNearbyAnchors));
+        StartCoroutine(RepeatFunction(AutoSaveInterval, AutoSave));
     }
 
     // Update is called once per frame
@@ -59,6 +78,13 @@ public class MainUI : MonoBehaviour
     public void OnEditModeButtonClick()
     {
         editMode = editMode == EditMode.View ? EditMode.Edit : EditMode.View;
+
+        if (editMode == EditMode.View)
+        {
+            SetTool(Tool.Cursor);
+        }
+
+        toolsPanel.SetActive(editMode != EditMode.View);
     }
 
     public enum Tool
@@ -73,7 +99,18 @@ public class MainUI : MonoBehaviour
 
     public void SetTool(Tool tool)
     {
+        SetHint("Set tool to " + tool);
         this.tool = tool;
+
+        if (cameraModeComp != null) cameraModeComp.SetActive(tool == Tool.Camera);
+        if (cursorModeComp != null) cursorModeComp.SetActive(tool == Tool.Cursor);
+        if (commentModeComp != null) commentModeComp.SetActive(tool == Tool.Comment);
+        if (anchorModeComp != null) anchorModeComp.SetActive(tool == Tool.Anchor);
+    }
+
+    public void OnCursorToolButtonClick()
+    {
+        SetTool(Tool.Cursor);
     }
 
     public void OnCameraToolButtonClick()
@@ -91,7 +128,7 @@ public class MainUI : MonoBehaviour
         SetTool(Tool.Anchor);
     }
 
-    public async Task OnCaptureButtonClick()
+    public async void OnCaptureButtonClick()
     {
         if (tool == Tool.Camera)
         {
@@ -120,7 +157,7 @@ public class MainUI : MonoBehaviour
                     )
                 };
 
-                return;
+                LinkPhotoAndAnchor();
             }
             catch (Exception ex)
             {
@@ -129,7 +166,7 @@ public class MainUI : MonoBehaviour
         }
     }
 
-    public async Task OnSendCommentButtonClick()
+    public async void OnSendCommentButtonClick()
     {
         if (tool == Tool.Comment)
         {
@@ -168,7 +205,7 @@ public class MainUI : MonoBehaviour
             GeospatialManager.ResolveCloudAnchor(anchor.cloudAnchorId, (ank) =>
             {
                 LOG($"Resolved anchor: {anchor.cloudAnchorId}");
-                CloudAnchorManager.AddResolvedAnchor(anchor.cloudAnchorId, ank.Anchor);
+                CloudAnchorManager.AddResolvedAnchor(anchor.cloudAnchorId, null, ank.Anchor);
                 // load the GeoObjects related to the anchor
                 DiscoverAnchor(anchor.cloudAnchorId);
             });
@@ -184,7 +221,7 @@ public class MainUI : MonoBehaviour
             // var spatialObject = await SpatialObject.CreateInstance(geoObject);
             var anchor = CloudAnchorManager.GetCloudAnchor(anchorId);
             // var spatialObject = await SpatialImage.CreateInstanceWithRelativePosition(geoObject, anchor.cloudAnchor.transform);
-            var spatialObject = await SpatialObject.CreateInstanceWithRelativePosition(geoObject, anchor.cloudAnchor.transform);
+            var spatialObject = await SpatialObject.CreateInstanceWithRelativePosition(geoObject, anchor.GetTransform());
 
             spatialObject.transform.SetParent(this.transform);
         }
@@ -285,22 +322,40 @@ public class MainUI : MonoBehaviour
 
             // Hide plane generator so users can focus on the object they placed.
             GeospatialManager.HostCloudAnchor(_anchor, qualityIndicator);
-            geoSpatialImage.anchor = _anchor;
+            // geoSpatialImage.anchor = _anchor;
             UpdatePlaneVisibility(false);
         }
 
         GeospatialManager.OnAnchorHosted.AddListener(async (anchorId) =>
             {
-                geoSpatialImage.cloudAnchorId = anchorId;
+                // geoSpatialImage.cloudAnchorId = anchorId;
                 Debug.Log($"Linked photo and anchor, cloudAnchorId: {geoSpatialImage.cloudAnchorId}");
-
-                SSApi.Echo("Linked photo and anchor, cloudAnchorId: " + geoSpatialImage.cloudAnchorId);
+                CloudAnchorManager.AddResolvedAnchor(anchorId, _anchor, null);
+                // SSApi.Echo("Linked photo and anchor, cloudAnchorId: " + geoSpatialImage.cloudAnchorId);
                 await SSApi.CreateCloudAnchorRecord(geoSpatialImage.cloudAnchorId, geoSpatialImage.anchor.transform.position);
             });
     }
 
     public async void LinkPhotoAndAnchor()
     {
+        // add anchor data
+        var nearestAnchor = CloudAnchorManager.GetClosestAnchor(geoSpatialImage.position);
+        if (nearestAnchor == null)
+        {
+            Debug.LogError("No resolved anchor found nearby!");
+            return;
+        }
+
+        geoSpatialImage.cloudAnchorId = nearestAnchor.id;
+        geoSpatialImage.anchor = nearestAnchor.arAnchor;
+        geoSpatialImage.cloudAnchor = nearestAnchor.cloudAnchor;
+
+        if (geoSpatialImage.position == null)
+        {
+            Debug.LogError("Position is null!");
+            return;
+        }
+
         await SSApi.SaveGeoSpatialImage(geoSpatialImage);
     }
     #endregion
@@ -468,4 +523,8 @@ public class MainUI : MonoBehaviour
     #endregion
 
 
+    private void AutoSave()
+    {
+        _ = scene.SaveAllObjects();
+    }
 }

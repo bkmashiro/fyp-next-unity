@@ -72,8 +72,14 @@ public class SSApi : MonoBehaviour
   public async Task<string> CreateGeoImage(string imageId, GeoSpatialImageData data)
   {
     var pose = data.pose;
-    var (localPos, localRot) = ConvertToLocalTransform(data.spatialImageGO.transform, data.anchor.transform);
-    var anchor = new
+    var _transform = data.anchor != null ? data.anchor.transform : (data.cloudAnchor != null ? data.cloudAnchor.transform : null);
+    if (_transform == null)
+    {
+      Debug.LogError("Transform is null!");
+      throw new Exception("Transform is null!");  
+    }
+    var (localPos, localRot) = ConvertToLocalTransform(data.spatialImageGO.transform, _transform);
+    var geoimg = new
     {
       ossFileId = imageId,
       position = new
@@ -100,7 +106,7 @@ public class SSApi : MonoBehaviour
       scale = new double[] { data.spatialImageGO.transform.localScale.x, data.spatialImageGO.transform.localScale.y, data.spatialImageGO.transform.localScale.z }
     };
 
-    return await Post("/geo-image", anchor);
+    return await Post("/geo-image", geoimg);
   }
 
   // cloudAnchorId: string

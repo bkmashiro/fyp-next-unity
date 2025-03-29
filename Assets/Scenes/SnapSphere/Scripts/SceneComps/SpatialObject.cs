@@ -105,6 +105,11 @@ public abstract class SpatialObject : MonoBehaviour
   private int initHashCode = 0;
   public override int GetHashCode()
   {
+    if (data == null)
+    {
+      return base.GetHashCode();
+    }
+
     return data.GetHashCode();
   }
 

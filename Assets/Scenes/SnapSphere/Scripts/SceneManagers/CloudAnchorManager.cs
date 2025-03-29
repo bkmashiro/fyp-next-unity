@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using UnityEngine.XR.ARFoundation;
 
 public class CloudAnchorManager : MonoBehaviour
 {
@@ -70,23 +71,34 @@ public class CloudAnchorManager : MonoBehaviour
     return cloudAnchors[id];
   }
 
-  public void AddResolvedAnchor(string id, ARCloudAnchor cloudAnchor)
+  public void AddResolvedAnchor(string id, ARAnchor arAnchor, ARCloudAnchor cloudAnchor)
   {
     var anchor = new CloudAnchor()
     {
       id = id,
       state = CloudAnchor.CloudAnchorState.Resolved,
-      cloudAnchor = cloudAnchor,
+      arAnchor = arAnchor,
+      cloudAnchor = cloudAnchor
     };
     cloudAnchors.Add(id, anchor);
   }
 
   public CloudAnchor GetClosestAnchor(Vector3 position)
   {
+    if (cloudAnchors.Count == 0)
+    {
+      return null;
+    }
+
+    if (cloudAnchors.Count == 1)
+    {
+      return cloudAnchors.Values.First();
+    }
+
     // get all resolved anchors
     var resolvedAnchors = cloudAnchors.Values.Where(anchor => anchor.state == CloudAnchor.CloudAnchorState.Resolved).ToList();
     // get the closest anchor
-    return resolvedAnchors.OrderBy(anchor => Vector3.Distance(anchor.cloudAnchor.transform.position, position)).FirstOrDefault();
+    return resolvedAnchors.OrderBy(anchor => Vector3.Distance(anchor.arAnchor.transform.position, position)).FirstOrDefault();
   }
 }
 
@@ -100,6 +112,7 @@ public class CloudAnchor
   }
 
   public CloudAnchorState state;
+  public ARAnchor arAnchor;
   public ARCloudAnchor cloudAnchor;
   public string id;
 
@@ -122,5 +135,12 @@ public class CloudAnchor
     children.Remove(child);
   }
 
-
+  public Transform GetTransform()
+  {
+    if (cloudAnchor != null)
+    {
+      return cloudAnchor.transform;
+    }
+    return arAnchor.transform;
+  }
 }

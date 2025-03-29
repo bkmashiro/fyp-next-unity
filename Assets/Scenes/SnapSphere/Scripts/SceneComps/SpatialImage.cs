@@ -57,8 +57,10 @@ public class SpatialImage : SpatialObject
 
         var ossFile = ((Newtonsoft.Json.Linq.JObject)data["ossFile"]).ToObject<Dictionary<string, object>>();
         var texture = await FindFirstObjectByType<SSApi>().DownloadTexture(ossFile["key"].ToString());
-        var renderer = instance.GetComponentInChildren<Renderer>();
-        renderer.material.mainTexture = texture;
+        // Material unlitMaterial = new(Shader.Find("Universal Render Pipeline/Unlit")) { mainTexture = texture };
+        // var renderer = instance.GetComponentInChildren<Renderer>();
+        // renderer.material = unlitMaterial;
+        spatialImage.GetComponentInChildren<Renderer>().material.mainTexture = texture;
 
         return spatialImage;
     }
@@ -99,10 +101,12 @@ public class SpatialImage : SpatialObject
         instance.transform.localScale = new Vector3(scale[0], scale[1], scale[2]);
 
         // Set texture
-        var ossFile = ((Newtonsoft.Json.Linq.JObject)data["ossFile"]).ToObject<Dictionary<string, object>>();
+        var ossFile = ((Newtonsoft.Json.Linq.JObject)data["ossFile"]).ToObject<Dictionary<string, object>>();   
         var texture = await FindFirstObjectByType<SSApi>().DownloadTexture(ossFile["key"].ToString());
-        var renderer = instance.GetComponentInChildren<Renderer>();
-        renderer.material.mainTexture = texture;
+        // Material unlitMaterial = new(Shader.Find("Universal Render Pipeline/Unlit")) { mainTexture = texture };
+        // var renderer = instance.GetComponentInChildren<Renderer>();
+        // renderer.material = unlitMaterial;
+        instance.GetComponentInChildren<Renderer>().material.mainTexture = texture;
 
         return spatialImage;
     }

@@ -23,6 +23,7 @@ public class GeoSpatialImageData
     public GameObject spatialImageGO;
     public GeospatialPose pose;
     public ARAnchor anchor;
+    public ARCloudAnchor cloudAnchor;
 }
 
 public class TakePhotoUI : MonoBehaviour

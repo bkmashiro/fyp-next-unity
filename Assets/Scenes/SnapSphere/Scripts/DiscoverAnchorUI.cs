@@ -35,7 +35,7 @@ public class DiscoverAnchorUI : MonoBehaviour
             GeospatialManager.ResolveCloudAnchor(anchor.cloudAnchorId, (ank) =>
             {
                 DebugText.text += $"Resolved anchor: {anchor.cloudAnchorId}\n";
-                CloudAnchorManager.AddResolvedAnchor(anchor.cloudAnchorId, ank.Anchor);
+                // CloudAnchorManager.AddResolvedAnchor(anchor.cloudAnchorId, ank.Anchor);
                 // load the GeoObjects related to the anchor
                 DiscoverAnchor(anchor.cloudAnchorId);
             });
@@ -51,7 +51,7 @@ public class DiscoverAnchorUI : MonoBehaviour
             // var spatialObject = await SpatialObject.CreateInstance(geoObject);
             var anchor = CloudAnchorManager.GetCloudAnchor(anchorId);
             // var spatialObject = await SpatialImage.CreateInstanceWithRelativePosition(geoObject, anchor.cloudAnchor.transform);
-            var spatialObject = await SpatialObject.CreateInstanceWithRelativePosition(geoObject, anchor.cloudAnchor.transform);
+            var spatialObject = await SpatialObject.CreateInstanceWithRelativePosition(geoObject, anchor.arAnchor.transform);
 
             spatialObject.transform.SetParent(this.transform);
         }
