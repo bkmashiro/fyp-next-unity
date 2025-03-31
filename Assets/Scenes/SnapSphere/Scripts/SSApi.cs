@@ -122,13 +122,13 @@ public class SSApi : MonoBehaviour
     return await Post("/cloud-anchor", anchor);
   }
 
-  public async Task<string> CreateCloudAnchorRecord(string cloudAnchorId, Vector3 anchorPosition)
+  public async Task<string> CreateCloudAnchorRecord(string cloudAnchorId, Vector3 pos)
   {
     var anchor = new
     {
       cloudAnchorId,
-      // ignore Altitude
-      anchorPosition = new double[] { anchorPosition.x, anchorPosition.z }
+      position = new double[] { pos.x, pos.z },
+      altitude = pos.y
     };
 
     return await Post("/cloud-anchor", anchor);

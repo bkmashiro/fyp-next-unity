@@ -332,7 +332,8 @@ public class MainUI : MonoBehaviour
                 Debug.Log($"Linked photo and anchor, cloudAnchorId: {geoSpatialImage.cloudAnchorId}");
                 CloudAnchorManager.AddResolvedAnchor(anchorId, _anchor, null);
                 // SSApi.Echo("Linked photo and anchor, cloudAnchorId: " + geoSpatialImage.cloudAnchorId);
-                await SSApi.CreateCloudAnchorRecord(geoSpatialImage.cloudAnchorId, geoSpatialImage.anchor.transform.position);
+                var geoPosition = GeospatialManager.EarthManager.Convert(geoSpatialImage.anchor.pose);
+                await SSApi.CreateCloudAnchorRecord(geoSpatialImage.cloudAnchorId, new double[] { geoPosition.Longitude, geoPosition.Altitude, geoPosition.Latitude });
             });
     }
 
