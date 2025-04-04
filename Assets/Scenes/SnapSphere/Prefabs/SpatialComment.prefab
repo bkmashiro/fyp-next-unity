@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3416842164712720124}
   - component: {fileID: 5911784316480251387}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: rt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83dbb376cb2c6e64c82484bedbb9a200, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentScene: {fileID: 0}
   id: 
   text: 
   cloudAnchorId: 
@@ -57,7 +58,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6313181483810246004}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: SpatialComment
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +93,7 @@ GameObject:
   - component: {fileID: 1477685376570782626}
   - component: {fileID: 8341125325128089545}
   - component: {fileID: 2667541410942132902}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -269,7 +270,7 @@ GameObject:
   - component: {fileID: 216345256328591503}
   - component: {fileID: 1269361973664416244}
   - component: {fileID: 6650013624099674414}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}

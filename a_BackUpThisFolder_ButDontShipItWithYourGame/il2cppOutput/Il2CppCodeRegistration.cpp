@@ -101,9 +101,10 @@ IL2CPP_EXTERN_C_CONST Il2CppCodeGenModule g_Unity_XR_OpenXR_Features_MockRuntime
 IL2CPP_EXTERN_C_CONST Il2CppCodeGenModule g_Unity_XR_OpenXR_Features_OculusQuestSupport_CodeGenModule;
 IL2CPP_EXTERN_C_CONST Il2CppCodeGenModule g_Unity_XR_OpenXR_Features_RuntimeDebugger_CodeGenModule;
 IL2CPP_EXTERN_C_CONST Il2CppCodeGenModule g___Generated_CodeGenModule;
+IL2CPP_EXTERN_C_CONST Il2CppCodeGenModule g_com_orkunmanap_runtimeU2DtransformU2Dhandles_CodeGenModule;
 IL2CPP_EXTERN_C_CONST Il2CppCodeGenModule g_mscorlib_CodeGenModule;
 IL2CPP_EXTERN_C const Il2CppCodeGenModule* g_CodeGenModules[];
-const Il2CppCodeGenModule* g_CodeGenModules[87] = 
+const Il2CppCodeGenModule* g_CodeGenModules[88] = 
 {
 	(&g_AssemblyU2DCSharp_CodeGenModule),
 	(&g_Google_XR_ARCoreExtensions_CodeGenModule),
@@ -191,6 +192,7 @@ const Il2CppCodeGenModule* g_CodeGenModules[87] =
 	(&g_Unity_XR_OpenXR_Features_OculusQuestSupport_CodeGenModule),
 	(&g_Unity_XR_OpenXR_Features_RuntimeDebugger_CodeGenModule),
 	(&g___Generated_CodeGenModule),
+	(&g_com_orkunmanap_runtimeU2DtransformU2Dhandles_CodeGenModule),
 	(&g_mscorlib_CodeGenModule),
 };
 IL2CPP_EXTERN_C const Il2CppCodeRegistration g_CodeRegistration;
@@ -198,20 +200,20 @@ const Il2CppCodeRegistration g_CodeRegistration =
 {
 	125,
 	g_ReversePInvokeWrapperPointers,
-	138046,
+	138067,
 	g_Il2CppGenericMethodPointers,
 	g_Il2CppGenericAdjustorThunks,
-	30093,
+	30108,
 	g_Il2CppInvokerPointers,
 	4429,
 	g_UnresolvedVirtualMethodPointers,
 	g_UnresolvedInstanceMethodPointers,
 	g_UnresolvedStaticMethodPointers,
-	1135,
+	1136,
 	g_Il2CppInteropData,
 	0,
 	NULL,
-	87,
+	88,
 	g_CodeGenModules,
 };
 IL2CPP_EXTERN_C_CONST Il2CppMetadataRegistration g_MetadataRegistration;

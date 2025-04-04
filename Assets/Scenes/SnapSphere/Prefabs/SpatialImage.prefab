@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2808615486587651204}
   - component: {fileID: 2124295417121840122}
   - component: {fileID: 4819426460101935523}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: SpatialImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6110070971613505031}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ad34abafad169848a38072baa96cdb2, type: 3}
   m_Name: 
@@ -226,7 +226,7 @@ GameObject:
   - component: {fileID: 8905298450901467385}
   - component: {fileID: 8072825895930407}
   - component: {fileID: 4523781110995821753}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -313,6 +313,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f345b4f293a0e2e4195b8dfce3bb39ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  instance: {fileID: 0}
+  parentScene: {fileID: 0}
   id: 
   cloudAnchorId: 
