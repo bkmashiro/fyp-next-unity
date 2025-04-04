@@ -223,7 +223,7 @@ public class MainUI : MonoBehaviour
             // var spatialObject = await SpatialImage.CreateInstanceWithRelativePosition(geoObject, anchor.cloudAnchor.transform);
             var spatialObject = await SpatialObject.CreateInstanceWithRelativePosition(geoObject, anchor.GetTransform());
 
-            spatialObject.transform.SetParent(this.transform);
+            // spatialObject.transform.SetParent(anchor.cloudAnchor.transform);
         }
     }
 

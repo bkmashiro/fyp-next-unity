@@ -16,8 +16,8 @@ static Il2CppMethodPointer s_methodPointers[2] =
 };
 static const int32_t s_InvokerIndices[2] = 
 {
-	30088,
-	17264,
+	30089,
+	17265,
 };
 IL2CPP_EXTERN_C const Il2CppCodeGenModule g_Unity_XR_ARFoundation_Samples_VisualScripting_CodeGenModule;
 const Il2CppCodeGenModule g_Unity_XR_ARFoundation_Samples_VisualScripting_CodeGenModule = 
