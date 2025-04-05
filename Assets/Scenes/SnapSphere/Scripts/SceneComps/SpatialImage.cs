@@ -46,9 +46,12 @@ public class SpatialImage : SpatialObject
         var scale = ((Newtonsoft.Json.Linq.JArray)data["scale"]).ToObject<float[]>();
         instance.transform.localScale = new Vector3(scale[0], scale[1], scale[2]);
 
-        var ossFile = ((Newtonsoft.Json.Linq.JObject)data["ossFile"]).ToObject<Dictionary<string, object>>();
-        var texture = await FindFirstObjectByType<SSApi>().DownloadTexture(ossFile["key"].ToString());
-        instance.GetComponentInChildren<Renderer>().material.mainTexture = texture;
+        if (data.ContainsKey("ossFile"))
+        {
+            var ossFile = ((Newtonsoft.Json.Linq.JObject)data["ossFile"]).ToObject<Dictionary<string, object>>();
+            var texture = await FindFirstObjectByType<SSApi>().DownloadTexture(ossFile["key"].ToString());
+            instance.GetComponentInChildren<Renderer>().material.mainTexture = texture;
+        }
 
         return spatialImage;
     }
@@ -79,10 +82,19 @@ public class SpatialImage : SpatialObject
 
         var scale = ((Newtonsoft.Json.Linq.JArray)data["scale"]).ToObject<float[]>();
         instance.transform.localScale = new Vector3(scale[0], scale[1], scale[2]);
-
         var ossFile = ((Newtonsoft.Json.Linq.JObject)data["ossFile"]).ToObject<Dictionary<string, object>>();   
         var texture = await FindFirstObjectByType<SSApi>().DownloadTexture(ossFile["key"].ToString());
         instance.GetComponentInChildren<Renderer>().material.mainTexture = texture;
+
+        // Debug.Log($"Created SpatialImage instance:");
+        // Debug.Log($"  - ID: {spatialImage.id}");
+        // Debug.Log($"  - Cloud Anchor ID: {spatialImage.cloudAnchorId}");
+        // Debug.Log($"  - Local Position: {instance.transform.localPosition}");
+        // Debug.Log($"  - Local Rotation: {instance.transform.localRotation.eulerAngles}");
+        Debug.Log($"  - Local Scale: {instance.transform.localScale}");
+        // Debug.Log($"  - World Position: {instance.transform.position}");
+        // Debug.Log($"  - World Rotation: {instance.transform.rotation.eulerAngles}");
+        // Debug.Log($"  - Parent: {instance.transform.parent?.name ?? "None"}");
 
         return spatialImage;
     }

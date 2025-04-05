@@ -76,7 +76,7 @@ public class SSApi : MonoBehaviour
     if (_transform == null)
     {
       Debug.LogError("Transform is null!");
-      throw new Exception("Transform is null!");  
+      throw new Exception("Transform is null!");
     }
     var (localPos, localRot) = ConvertToLocalTransform(data.spatialImageGO.transform, _transform);
     var geoimg = new
@@ -99,12 +99,17 @@ public class SSApi : MonoBehaviour
       relPosition = new
       {
         type = "Point",
-        coordinates = new double[] { localPos.x, localPos.y }
+        coordinates = new double[] { localPos.x, localPos.z }
       },
-      relAltitude = localPos.z,
-      relOrientation = new double[] { localRot.x, localRot.y, localRot.z, localRot.w },
-      scale = new double[] { data.spatialImageGO.transform.localScale.x, data.spatialImageGO.transform.localScale.y, data.spatialImageGO.transform.localScale.z }
+      relAltitude = localPos.y,
+      relOrientation = data.relOrientation_override != null ?
+        new double[] { data.relOrientation_override.x, data.relOrientation_override.y, data.relOrientation_override.z, data.relOrientation_override.w } :
+        new double[] { localRot.x, localRot.y, localRot.z, localRot.w },
+      // scale = new double[] { data.spatialImageGO.transform.localScale.x, data.spatialImageGO.transform.localScale.y, data.spatialImageGO.transform.localScale.z }
+      scale = new double[] { data.scale.x, data.scale.y, data.scale.z }
     };
+
+    // Debug.Log($"scale: {geoimg.scale[0]}, {geoimg.scale[1]}, {geoimg.scale[2]}");
 
     return await Post("/geo-image", geoimg);
   }
@@ -287,10 +292,10 @@ public class SSApi : MonoBehaviour
     return (localPos, localRot);
   }
 
-  public (Vector3, Quaternion) ConvertToLocalTransform(Vector3 worldPos, Quaternion worldRot, Vector3 originPos, Quaternion originRot)
+  public (Vector3, Quaternion) ConvertToLocalTransform(Vector3 targetPos, Quaternion targetRot, Vector3 originPos, Quaternion originRot)
   {
-    var localPos = ConvertToLocalPosition(worldPos, originPos, originRot);
-    var localRot = Quaternion.Inverse(originRot) * worldRot;
+    var localPos = ConvertToLocalPosition(targetPos, originPos, originRot);
+    var localRot = Quaternion.Inverse(originRot) * targetRot;
 
     return (localPos, localRot);
   }
@@ -452,7 +457,7 @@ public class SSApi : MonoBehaviour
 
   public async Task<Dictionary<string, object>> UpdateObject(string id, Dictionary<string, object> data)
   {
-    var response = await Post<Dictionary<string, object>, Dictionary<string, object>>($"/geo-object/{id}", new Dictionary<string, object>{
+    var response = await Post<Dictionary<string, object>, Dictionary<string, object>>($"/geo-object", new Dictionary<string, object>{
       {"id", id},
       {"data", data}
     });

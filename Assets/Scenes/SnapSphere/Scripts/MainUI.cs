@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
+using Newtonsoft.Json.Linq;
 
 public class MainUI : MonoBehaviour
 {
@@ -143,21 +144,86 @@ public class MainUI : MonoBehaviour
                     return;
                 }
 
-                var plane = CreatePlaneInView(photo, 0.7f, Camera.main);
-                var anchor = plane.AddComponent<ARAnchor>();
+                // 计算平面位置和朝向
+                Vector3 planePosition = Camera.main.transform.position + Camera.main.transform.forward * 0.7f;
+                Quaternion planeRotation = Quaternion.LookRotation(planePosition - Camera.main.transform.position);
+                
+                // 计算平面大小以匹配摄像机视野
+                float height = 2f * 0.7f * Mathf.Tan(Camera.main.fieldOfView * 0.5f * Mathf.Deg2Rad);
+                float width = height * Camera.main.aspect;
+                Vector3 planeScale = new Vector3(width, height, 1f);
+                
+                // 获取地理坐标
+                var geoPose = GeospatialManager.EarthManager.Convert(new Pose(planePosition, planeRotation));
+                
+                // 获取最近的锚点
+                var nearestAnchor = CloudAnchorManager.GetClosestAnchor(planePosition);
+                if (nearestAnchor == null)
+                {
+                    Debug.LogError("No resolved anchor found nearby!");
+                    return;
+                }
+                
+                // 计算相对于锚点的位置
+                var (relPosition, relRotation) = SSApi.ConvertToLocalTransform(
+                    planePosition,
+                    planeRotation,
+                    nearestAnchor.GetTransform().position,
+                    nearestAnchor.GetTransform().rotation
+                );
+                Debug.Log($"relPosition: {relPosition}, relRotation: {relRotation}, planeScale: {planeScale}");
+                // 创建数据字典，使用 JObject 和 JArray 类型
+                var tempData = new Dictionary<string, object>
+                {
+                    ["id"] = Guid.NewGuid().ToString(),
+                    ["cloudAnchor"] = new JObject { { "cloudAnchorId", nearestAnchor.id } },
+                    ["relPosition"] = new JObject 
+                    { 
+                        ["type"] = "Point",
+                        ["coordinates"] = new JArray { relPosition.x, relPosition.z } 
+                    },
+                    ["relAltitude"] = relPosition.y,
+                    ["relOrientation"] = new JArray { relRotation.x, relRotation.y, relRotation.z, relRotation.w },
+                    ["scale"] = new JArray { planeScale.x, planeScale.y, planeScale.z }
+                    // we omit ossFile, then it won't download the texture
+                    // ["ossFile"] = new Dictionary<string, object> { { "key", "temp" } }
+                };
+
+                // 上传图片到oss
+                var imageBytes = photo.EncodeToPNG();
+                var uploadResponse = await SSApi.Upload(imageBytes, $"{nearestAnchor.id}.png");
+                tempData["ossFile"] = new JObject { { "key", uploadResponse.key } };
+
+                // 使用 SpatialImage.CreateInstanceWithRelativePosition 创建实例
+                var spatialImage = await SpatialImage.CreateInstanceWithRelativePosition(tempData, nearestAnchor.GetTransform());
+                
+                // 应用纹理
+                var renderer = spatialImage.GetComponentInChildren<Renderer>();
+                if (renderer != null)
+                {
+                    renderer.material.mainTexture = photo;
+                }
+                
+                // 添加锚点
+                // var anchor = spatialImage.gameObject.AddComponent<ARAnchor>();
+                
+                // 设置 geoSpatialImage 数据
                 geoSpatialImage = new GeoSpatialImageData
                 {
                     texture = photo,
-                    position = plane.transform.position,
-                    rotation = plane.transform.rotation,
-                    scale = plane.transform.localScale,
-                    spatialImageGO = plane,
-                    pose = GeospatialManager.EarthManager.Convert(
-                        new Pose(plane.transform.position, plane.transform.rotation)
-                    )
+                    position = spatialImage.transform.position,
+                    rotation = spatialImage.transform.rotation,
+                    scale = new Vector3(planeScale.x, planeScale.y, planeScale.z),
+                    spatialImageGO = spatialImage.gameObject,
+                    pose = geoPose,
+                    cloudAnchorId = nearestAnchor.id,
+                    anchor = nearestAnchor.arAnchor,
+                    cloudAnchor = nearestAnchor.cloudAnchor,
+                    relOrientation_override = relRotation
                 };
 
-                LinkPhotoAndAnchor();
+                // 保存到服务器
+                await SSApi.SaveGeoSpatialImage(geoSpatialImage);
             }
             catch (Exception ex)
             {
@@ -223,7 +289,8 @@ public class MainUI : MonoBehaviour
             // var spatialObject = await SpatialImage.CreateInstanceWithRelativePosition(geoObject, anchor.cloudAnchor.transform);
             var spatialObject = await SpatialObject.CreateInstanceWithRelativePosition(geoObject, anchor.GetTransform());
 
-            // spatialObject.transform.SetParent(anchor.cloudAnchor.transform);
+            // register the spatial object to the scene
+            scene.AddSpatialObject(spatialObject);
         }
     }
 
@@ -362,54 +429,7 @@ public class MainUI : MonoBehaviour
     #endregion
 
     #region Camera
-    public GameObject CreatePlaneInView(Texture2D texture, float distance, Camera mainCamera)
-    {
-        if (mainCamera == null)
-        {
-            Debug.LogError("Main camera not assigned!");
-            throw new ArgumentNullException(nameof(mainCamera));
-        }
-
-        if (texture == null)
-        {
-            Debug.LogError("Texture is null!");
-            throw new ArgumentNullException(nameof(texture));
-        }
-
-        // 计算平面位置：距离摄像机 N 米
-        Vector3 planePosition = mainCamera.transform.position + mainCamera.transform.forward * distance;
-
-        // 创建平面实例
-        GameObject plane = Instantiate(spatialImagePrefab);
-        plane.transform.position = planePosition;
-
-        // 设置平面朝向：正对摄像机
-        plane.transform.rotation = Quaternion.LookRotation(plane.transform.position - mainCamera.transform.position);
-
-        // 计算平面大小以匹配摄像机视野
-        float height = 2f * distance * Mathf.Tan(mainCamera.fieldOfView * 0.5f * Mathf.Deg2Rad);
-        float width = height * mainCamera.aspect;
-
-
-        // 设置平面大小
-        plane.transform.localScale = new Vector3(width, height, 1f);
-
-        // 应用材质
-        Renderer renderer = plane.GetComponentInChildren<Renderer>();
-        if (renderer != null)
-        {
-            renderer.material.mainTexture = texture;
-        }
-        else
-        {
-            Debug.LogError("Plane prefab does not have a Renderer component!");
-        }
-        plane.SetActive(true);
-        Debug.Log($"Created plane at distance {distance} meters with size {width}x{height}");
-
-        return plane;
-    }
-
+    // CreatePlaneInView 方法已被删除，因为我们现在使用 SpatialImage.CreateInstance
     #endregion
 
     #region Comment

@@ -24,6 +24,7 @@ public class GeoSpatialImageData
     public GeospatialPose pose;
     public ARAnchor anchor;
     public ARCloudAnchor cloudAnchor;
+    public Quaternion relOrientation_override;
 }
 
 public class TakePhotoUI : MonoBehaviour

@@ -31,9 +31,11 @@ public class Scene : MonoBehaviour
         spatialObjects.Remove(spatialObject.id);
     }
 
-    public Task<Dictionary<string, object>> SaveObject(SpatialObject spatialObject)
+    public async Task<Dictionary<string, object>> SaveObject(SpatialObject spatialObject)
     {
-        return api.UpdateObject(spatialObject.id, spatialObject.data);
+        // return api.UpdateObject(spatialObject.id, spatialObject.data);
+        spatialObject.SaveChanges();
+        return await spatialObject.Sync();
     }
 
     public async Task<Dictionary<string, Dictionary<string, object>>> SaveAllObjects()

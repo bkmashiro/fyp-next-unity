@@ -119,6 +119,7 @@ public abstract class SpatialObject : MonoBehaviour
   {
     if (IsHashChanged)
     {
+      Debug.Log("Syncing changed spatial object: " + id);
       return parentScene.SaveObject(this);
     }
     return Task.FromResult(this.data);
