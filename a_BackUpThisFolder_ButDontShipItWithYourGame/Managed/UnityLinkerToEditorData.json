@@ -961,9 +961,7 @@
           },
           {
             "name": "Rigidbody",
-            "scenes": [
-              "Assets/Scenes/SnapSphere/CreateAnchor.unity"
-            ],
+            "scenes": [],
             "dependencyType": 0,
             "icon": null
           },

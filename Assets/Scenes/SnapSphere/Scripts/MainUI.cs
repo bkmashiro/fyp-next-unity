@@ -544,7 +544,7 @@ public class MainUI : MonoBehaviour
     #endregion
 
 
-    private void AutoSave()
+    public void AutoSave()
     {
         _ = scene.SaveAllObjects();
     }

@@ -181,22 +181,22 @@ public class SimpleTransformController : MonoBehaviour
                         
                         // 调试信息
                         // Debug.Log($"Parent moved to: {_selectedObject.position}");
-                        foreach (Transform child in _selectedObject)
-                        {
-                            if (child != null)
-                            {
-                                // Debug.Log($"Child '{child.name}' - Local: {child.localPosition}, World: {child.position}");
-                                // 检查是否有特殊组件
-                                var components = child.GetComponents<Component>();
-                                foreach (var comp in components)
-                                {
-                                    if (comp != null && !(comp is Transform))
-                                    {
-                                        // Debug.Log($"  - Has component: {comp.GetType().Name}");
-                                    }
-                                }
-                            }
-                        }
+                        // foreach (Transform child in _selectedObject)
+                        // {
+                        //     if (child != null)
+                        //     {
+                        //         // Debug.Log($"Child '{child.name}' - Local: {child.localPosition}, World: {child.position}");
+                        //         // 检查是否有特殊组件
+                        //         var components = child.GetComponents<Component>();
+                        //         foreach (var comp in components)
+                        //         {
+                        //             if (comp != null && !(comp is Transform))
+                        //             {
+                        //                 // Debug.Log($"  - Has component: {comp.GetType().Name}");
+                        //             }
+                        //         }
+                        //     }
+                        // }
                     }
                     else if (handleParent == _rotationHandles)
                     {

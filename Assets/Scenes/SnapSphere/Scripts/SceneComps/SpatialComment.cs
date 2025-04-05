@@ -26,6 +26,15 @@ public class SpatialComment : SpatialObject
     base.SaveChanges();
     data["text"] = text;
     data["cloudAnchor"] = new Dictionary<string, object> { { "cloudAnchorId", cloudAnchorId } };
+
+    data["relPosition"] = new Dictionary<string, object> { 
+        { "type", "Point" },
+        { "coordinates", new float[] { transform.localPosition.x, transform.localPosition.z } }
+    };
+    data["relOrientation"] = new float[] { transform.localRotation.x, transform.localRotation.y, transform.localRotation.z, transform.localRotation.w };
+    data["relAltitude"] = transform.localPosition.y;
+    data["scale"] = new float[] { transform.localScale.x, transform.localScale.y, transform.localScale.z };
+
   }
 
   public static async Task<SpatialComment> CreateInstance(Dictionary<string, object> data)
@@ -36,7 +45,7 @@ public class SpatialComment : SpatialObject
     spatialComment.cloudAnchorId = ((Newtonsoft.Json.Linq.JObject)data["cloudAnchor"])["cloudAnchorId"].ToString();
     spatialComment.id = data["id"].ToString();
     spatialComment.text = data["text"].ToString();
-
+    spatialComment.UpdateHashCode();
     Debug.Log($"Full data received: {Newtonsoft.Json.JsonConvert.SerializeObject(data)}");
 
     var position = ((Newtonsoft.Json.Linq.JObject)data["position"]).ToObject<Dictionary<string, object>>();
@@ -87,9 +96,10 @@ public class SpatialComment : SpatialObject
     spatialComment.data = data;
     spatialComment.cloudAnchorId = ((Newtonsoft.Json.Linq.JObject)data["cloudAnchor"])["cloudAnchorId"].ToString();
     spatialComment.id = data["id"].ToString();
-    Debug.Log($"SpatialComment id: {spatialComment.id}"); 
+    Debug.Log($"SpatialComment id: {spatialComment.id}");
     spatialComment.text = data["text"].ToString();
     Debug.Log($"SpatialComment text: {spatialComment.text}");
+    spatialComment.UpdateHashCode();
     // Set parent to anchor transform
     instance.transform.parent = anchorTransform;
 

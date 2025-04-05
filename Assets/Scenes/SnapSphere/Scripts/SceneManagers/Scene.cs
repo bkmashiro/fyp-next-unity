@@ -6,7 +6,7 @@ using UnityEngine;
 public class Scene : MonoBehaviour
 {
     public Dictionary<string, SpatialObject> spatialObjects = new();
-    private SSApi api;
+    public SSApi api;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -33,9 +33,10 @@ public class Scene : MonoBehaviour
 
     public async Task<Dictionary<string, object>> SaveObject(SpatialObject spatialObject)
     {
-        // return api.UpdateObject(spatialObject.id, spatialObject.data);
         spatialObject.SaveChanges();
-        return await spatialObject.Sync();
+        await spatialObject.Sync();
+
+        return spatialObject.data;
     }
 
     public async Task<Dictionary<string, Dictionary<string, object>>> SaveAllObjects()

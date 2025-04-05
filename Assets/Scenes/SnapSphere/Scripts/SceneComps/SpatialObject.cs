@@ -12,7 +12,7 @@ using UnityEngine.XR.ARFoundation;
 
 public abstract class SpatialObject : MonoBehaviour
 {
-  public Dictionary<string, object> data;
+  public Dictionary<string, object> data = new Dictionary<string, object>();
   public Scene parentScene = null;
   public GameObject instance
   {
@@ -39,9 +39,8 @@ public abstract class SpatialObject : MonoBehaviour
     }
 
     // save all changes to the data
-    data["position"] = position;
-    data["rotation"] = rotation;
     data["scale"] = scale;
+    Debug.Log("saved data base: ");
   }
 
   public void ApplyChanges()
@@ -107,21 +106,62 @@ public abstract class SpatialObject : MonoBehaviour
   {
     if (data == null)
     {
+      Debug.Log("data is null");
       return base.GetHashCode();
     }
 
-    return data.GetHashCode();
+    int hash = 17;
+    foreach (var kvp in data)
+    {
+      hash = hash * 31 + kvp.Key.GetHashCode();
+      if (kvp.Value != null)
+      {
+        if (kvp.Value is Vector3 vector3)
+        {
+          hash = hash * 31 + vector3.x.GetHashCode();
+          hash = hash * 31 + vector3.y.GetHashCode();
+          hash = hash * 31 + vector3.z.GetHashCode();
+        }
+        else if (kvp.Value is Quaternion quaternion)
+        {
+          hash = hash * 31 + quaternion.x.GetHashCode();
+          hash = hash * 31 + quaternion.y.GetHashCode();
+          hash = hash * 31 + quaternion.z.GetHashCode();
+          hash = hash * 31 + quaternion.w.GetHashCode();
+        }
+        else
+        {
+          hash = hash * 31 + kvp.Value.GetHashCode();
+        }
+      }
+    }
+    return hash;
   }
+
+  public void TestHashCode()
+  {
+    this.SaveChanges();
+    Debug.Log("test hashcode: " + GetHashCode());
+  }
+
+  public void UpdateHashCode()
+  {
+    initHashCode = GetHashCode();
+  }
+
 
   public bool IsHashChanged { get { return GetHashCode() != initHashCode; } }
 
-  public Task<Dictionary<string, object>> Sync()
+  public async Task<Dictionary<string, object>> Sync()
   {
     if (IsHashChanged)
     {
       Debug.Log("Syncing changed spatial object: " + id);
-      return parentScene.SaveObject(this);
+      SaveChanges();
+
+      await parentScene.api.UpdateObject(id, data);
     }
-    return Task.FromResult(this.data);
+    Debug.Log("unchanged spatial object: " + id);
+    return data;
   }
 }

@@ -16,6 +16,12 @@ public class SpatialImage : SpatialObject
     {
         base.SaveChanges();
         data["cloudAnchor"] = new Dictionary<string, object> { { "cloudAnchorId", cloudAnchorId } };
+        // update relPosition (directly use local position, rotation)
+        data["relPosition"] = new Dictionary<string, object> { { "coordinates", new float[] { transform.localPosition.x, transform.localPosition.z } } };
+        data["relOrientation"] = new float[] { transform.localRotation.x, transform.localRotation.y, transform.localRotation.z, transform.localRotation.w };
+        data["relAltitude"] = transform.localPosition.y;
+        data["scale"] = new float[] { transform.localScale.x, transform.localScale.y, transform.localScale.z };
+        Debug.Log("saved data image: " + transform.localPosition);
     }
 
     public static new async Task<SpatialImage> CreateInstance(Dictionary<string, object> data)
@@ -25,7 +31,7 @@ public class SpatialImage : SpatialObject
         spatialImage.data = data;
         spatialImage.cloudAnchorId = ((Newtonsoft.Json.Linq.JObject)data["cloudAnchor"])["cloudAnchorId"].ToString();
         spatialImage.id = data["id"].ToString();
-
+        spatialImage.UpdateHashCode();
         var position = ((Newtonsoft.Json.Linq.JObject)data["position"]).ToObject<Dictionary<string, object>>();
         var coordinates = ((Newtonsoft.Json.Linq.JArray)position["coordinates"]).ToObject<float[]>();
         var altitude = Convert.ToSingle(data["altitude"]);
@@ -63,7 +69,7 @@ public class SpatialImage : SpatialObject
         spatialImage.data = data;
         spatialImage.cloudAnchorId = ((Newtonsoft.Json.Linq.JObject)data["cloudAnchor"])["cloudAnchorId"].ToString();
         spatialImage.id = data["id"].ToString();
-
+        spatialImage.UpdateHashCode();  
         instance.transform.SetParent(anchorTransform, false);
 
         var relPosition = ((Newtonsoft.Json.Linq.JObject)data["relPosition"]).ToObject<Dictionary<string, object>>();
