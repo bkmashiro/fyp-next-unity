@@ -17,11 +17,14 @@ public class SpatialImage : SpatialObject
         base.SaveChanges();
         data["cloudAnchor"] = new Dictionary<string, object> { { "cloudAnchorId", cloudAnchorId } };
         // update relPosition (directly use local position, rotation)
-        data["relPosition"] = new Dictionary<string, object> { { "coordinates", new float[] { transform.localPosition.x, transform.localPosition.z } } };
-        data["relOrientation"] = new float[] { transform.localRotation.x, transform.localRotation.y, transform.localRotation.z, transform.localRotation.w };
-        data["relAltitude"] = transform.localPosition.y;
-        data["scale"] = new float[] { transform.localScale.x, transform.localScale.y, transform.localScale.z };
-        Debug.Log("saved data image: " + transform.localPosition);
+        var (relPosition, relOrientation) = parentScene.api.ConvertToLocalTransform(
+            transform.transform.parent, // the prefab
+            parentTransform // if set, the anchor
+            );
+        data["relPosition"] = new Dictionary<string, object> { { "coordinates", new float[] { relPosition.x, relPosition.z } } };
+        data["relOrientation"] = new float[] { relOrientation.x, relOrientation.y, relOrientation.z, relOrientation.w };
+        data["relAltitude"] = relPosition.y;
+        // data["scale"] = new float[] { transform.localScale.x, transform.localScale.y, transform.localScale.z };
     }
 
     public static new async Task<SpatialImage> CreateInstance(Dictionary<string, object> data)
@@ -70,6 +73,7 @@ public class SpatialImage : SpatialObject
         spatialImage.cloudAnchorId = ((Newtonsoft.Json.Linq.JObject)data["cloudAnchor"])["cloudAnchorId"].ToString();
         spatialImage.id = data["id"].ToString();
         spatialImage.UpdateHashCode();  
+        spatialImage.parentTransform = anchorTransform;
         instance.transform.SetParent(anchorTransform, false);
 
         var relPosition = ((Newtonsoft.Json.Linq.JObject)data["relPosition"]).ToObject<Dictionary<string, object>>();

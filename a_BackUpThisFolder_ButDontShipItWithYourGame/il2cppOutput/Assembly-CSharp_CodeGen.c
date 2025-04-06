@@ -285,6 +285,8 @@ extern void SpatialObject_get_rotation_m7B2ECEBB9C893B5805ED27BA20DD1899FA1D323A
 extern void SpatialObject_set_rotation_m25B8887DA52B494FDD7A997E914FE57BE06319F4 (void);
 extern void SpatialObject_get_scale_m58CDF21302546A1DC08B06C1F39FBB433AA3C8C5 (void);
 extern void SpatialObject_set_scale_m85114855439564E8AA383EA2DF5A46E2758FD0CB (void);
+extern void SpatialObject_get_parentTransform_m900E39AC134CB8BDDF71C6BE717BB4B3B348748B (void);
+extern void SpatialObject_set_parentTransform_m4A0E7BC04789F2487370B974B3B535130E2A67B7 (void);
 extern void SpatialObject_BindToAnchor_m6C8D3E0BC93333638A62B2F1ADC16D0DD1A9E788 (void);
 extern void SpatialObject_SaveChanges_mA0174725FBBA2E99C8DC8C6CA133A4524F11AB90 (void);
 extern void SpatialObject_ApplyChanges_mB69ED9D2AC8FEFB6ECF34F6436E8CAB4E96E936E (void);
@@ -297,15 +299,15 @@ extern void SpatialObject_UpdateHashCode_mBBE0B68C65B702C88109B78E3873B546DCBD8D
 extern void SpatialObject_get_IsHashChanged_m3573AF45569C808E9A8AF49D9B207AC387967D39 (void);
 extern void SpatialObject_Sync_mD765589788DAA7CBDD616DDE7976C9EA9B81AE07 (void);
 extern void SpatialObject__ctor_m7A52A985700FE0F109C002C7F6A5CB52026B8742 (void);
-extern void U3CCreateInstanceU3Ed__17__ctor_m183DBDD68B127560DDF55131053522EC6168F313 (void);
-extern void U3CCreateInstanceU3Ed__17_MoveNext_m58E05F969BB9738054D307708E3A2E73ED28E9CD (void);
-extern void U3CCreateInstanceU3Ed__17_SetStateMachine_m0EB3265EFE0ED5E36E8DC632B3D17270DFBCED2A (void);
-extern void U3CCreateInstanceWithRelativePositionU3Ed__18__ctor_m7B55BCB5072909772181D6A6DF1657F41C11E63A (void);
-extern void U3CCreateInstanceWithRelativePositionU3Ed__18_MoveNext_m48089D36549C7B42504C831B5F733BB53C14A675 (void);
-extern void U3CCreateInstanceWithRelativePositionU3Ed__18_SetStateMachine_m68C5298D303CB501B6DA7601E2EA7D64CB804AAA (void);
-extern void U3CSyncU3Ed__26__ctor_m637A1C6EC2B5032B31D53A7C3340C5E74A9C3AF4 (void);
-extern void U3CSyncU3Ed__26_MoveNext_m0478E657821CC22D862DCD483CFCBD063D7CB59D (void);
-extern void U3CSyncU3Ed__26_SetStateMachine_mC1A372EFB505A5E817DD36DF241CF8CB7FB9F331 (void);
+extern void U3CCreateInstanceU3Ed__21__ctor_m4BB8DF6FA184A3CEE7544E8340A7F8A2CA062143 (void);
+extern void U3CCreateInstanceU3Ed__21_MoveNext_m146BD91D91ECA98B6CC9F5A07C20393DCFE61793 (void);
+extern void U3CCreateInstanceU3Ed__21_SetStateMachine_m7DD14E7B18C57362E7D9DBC6A02F9B09503EB6B2 (void);
+extern void U3CCreateInstanceWithRelativePositionU3Ed__22__ctor_mDAC813E205544E89F4D6E6050300A59AFE3DC6BC (void);
+extern void U3CCreateInstanceWithRelativePositionU3Ed__22_MoveNext_mC803676737942E13797856EA9B5E2D8325558097 (void);
+extern void U3CCreateInstanceWithRelativePositionU3Ed__22_SetStateMachine_m90E2E21B06B69CF2C493208EC76426DEEDE10919 (void);
+extern void U3CSyncU3Ed__30__ctor_m7549C6A685AD70B217D5FFDB03AD53797D102F2F (void);
+extern void U3CSyncU3Ed__30_MoveNext_m95407A06E4D07F73385D90184AA15DE97324CB15 (void);
+extern void U3CSyncU3Ed__30_SetStateMachine_m691A736075B4BDD9FA0D7B523E0696D2EBF9F872 (void);
 extern void CloudAnchorManager_GetPrefab_mA9140A950CBB8F81DC71277530C4C97F57991C1A (void);
 extern void CloudAnchorManager_CreateCloudAnchor_mA430A98807B5D05FF4F9505ADE365F8AB9859C3E (void);
 extern void CloudAnchorManager_GetCloudAnchor_mCBC75E583C1B62580D1DF1C2C6EF389958B2AC49 (void);
@@ -1279,7 +1281,7 @@ extern void Todo_ToString_m2717C1F1DF64663621435EF9C35CE95C8C7F51B9 (void);
 extern void Todo__ctor_mBFA41A1DC43949DAAA32DDE4D705863D4F469C13 (void);
 extern void User_ToString_m4DEC5DBD2A99CE340A211F2C66BA6D86D01C12CF (void);
 extern void User__ctor_m7F7F3F420853C6F4A54B9270C6DD870EB878C993 (void);
-static Il2CppMethodPointer s_methodPointers[1640] = 
+static Il2CppMethodPointer s_methodPointers[1642] = 
 {
 	NULL,
 	NULL,
@@ -1611,6 +1613,8 @@ static Il2CppMethodPointer s_methodPointers[1640] =
 	SpatialObject_set_rotation_m25B8887DA52B494FDD7A997E914FE57BE06319F4,
 	SpatialObject_get_scale_m58CDF21302546A1DC08B06C1F39FBB433AA3C8C5,
 	SpatialObject_set_scale_m85114855439564E8AA383EA2DF5A46E2758FD0CB,
+	SpatialObject_get_parentTransform_m900E39AC134CB8BDDF71C6BE717BB4B3B348748B,
+	SpatialObject_set_parentTransform_m4A0E7BC04789F2487370B974B3B535130E2A67B7,
 	SpatialObject_BindToAnchor_m6C8D3E0BC93333638A62B2F1ADC16D0DD1A9E788,
 	SpatialObject_SaveChanges_mA0174725FBBA2E99C8DC8C6CA133A4524F11AB90,
 	SpatialObject_ApplyChanges_mB69ED9D2AC8FEFB6ECF34F6436E8CAB4E96E936E,
@@ -1623,15 +1627,15 @@ static Il2CppMethodPointer s_methodPointers[1640] =
 	SpatialObject_get_IsHashChanged_m3573AF45569C808E9A8AF49D9B207AC387967D39,
 	SpatialObject_Sync_mD765589788DAA7CBDD616DDE7976C9EA9B81AE07,
 	SpatialObject__ctor_m7A52A985700FE0F109C002C7F6A5CB52026B8742,
-	U3CCreateInstanceU3Ed__17__ctor_m183DBDD68B127560DDF55131053522EC6168F313,
-	U3CCreateInstanceU3Ed__17_MoveNext_m58E05F969BB9738054D307708E3A2E73ED28E9CD,
-	U3CCreateInstanceU3Ed__17_SetStateMachine_m0EB3265EFE0ED5E36E8DC632B3D17270DFBCED2A,
-	U3CCreateInstanceWithRelativePositionU3Ed__18__ctor_m7B55BCB5072909772181D6A6DF1657F41C11E63A,
-	U3CCreateInstanceWithRelativePositionU3Ed__18_MoveNext_m48089D36549C7B42504C831B5F733BB53C14A675,
-	U3CCreateInstanceWithRelativePositionU3Ed__18_SetStateMachine_m68C5298D303CB501B6DA7601E2EA7D64CB804AAA,
-	U3CSyncU3Ed__26__ctor_m637A1C6EC2B5032B31D53A7C3340C5E74A9C3AF4,
-	U3CSyncU3Ed__26_MoveNext_m0478E657821CC22D862DCD483CFCBD063D7CB59D,
-	U3CSyncU3Ed__26_SetStateMachine_mC1A372EFB505A5E817DD36DF241CF8CB7FB9F331,
+	U3CCreateInstanceU3Ed__21__ctor_m4BB8DF6FA184A3CEE7544E8340A7F8A2CA062143,
+	U3CCreateInstanceU3Ed__21_MoveNext_m146BD91D91ECA98B6CC9F5A07C20393DCFE61793,
+	U3CCreateInstanceU3Ed__21_SetStateMachine_m7DD14E7B18C57362E7D9DBC6A02F9B09503EB6B2,
+	U3CCreateInstanceWithRelativePositionU3Ed__22__ctor_mDAC813E205544E89F4D6E6050300A59AFE3DC6BC,
+	U3CCreateInstanceWithRelativePositionU3Ed__22_MoveNext_mC803676737942E13797856EA9B5E2D8325558097,
+	U3CCreateInstanceWithRelativePositionU3Ed__22_SetStateMachine_m90E2E21B06B69CF2C493208EC76426DEEDE10919,
+	U3CSyncU3Ed__30__ctor_m7549C6A685AD70B217D5FFDB03AD53797D102F2F,
+	U3CSyncU3Ed__30_MoveNext_m95407A06E4D07F73385D90184AA15DE97324CB15,
+	U3CSyncU3Ed__30_SetStateMachine_m691A736075B4BDD9FA0D7B523E0696D2EBF9F872,
 	CloudAnchorManager_GetPrefab_mA9140A950CBB8F81DC71277530C4C97F57991C1A,
 	CloudAnchorManager_CreateCloudAnchor_mA430A98807B5D05FF4F9505ADE365F8AB9859C3E,
 	CloudAnchorManager_GetCloudAnchor_mCBC75E583C1B62580D1DF1C2C6EF389958B2AC49,
@@ -2940,16 +2944,16 @@ static Il2CppTokenAdjustorThunkPair s_adjustorThunks[12] =
 	{ 0x06000065, CloudAnchorHistory__ctor_mAC19DC3D4BA6131E34450094852DD702E6A8E066_AdjustorThunk },
 	{ 0x06000066, CloudAnchorHistory_get_CreatedTime_m62CA99C2D2EFB4A628BC2E30B08758122A3C8868_AdjustorThunk },
 	{ 0x06000067, CloudAnchorHistory_ToString_m315569B90DEFE8E8A8A16162D1B6497E3B5DC406_AdjustorThunk },
-	{ 0x06000301, ThermalStateChange_get_previousThermalState_m19E75189B416E288F0818A9A007A7CFDFA94DFC4_AdjustorThunk },
-	{ 0x06000302, ThermalStateChange_get_currentThermalState_mE1A1FFF2945DB5ADAAB05D8F3B92DAE9A497204C_AdjustorThunk },
-	{ 0x06000303, ThermalStateChange__ctor_mBE6D0BD86B9E84BA65DECFA08E5C1F28E1DABB6B_AdjustorThunk },
-	{ 0x06000382, NamedPrefab__ctor_mE953E03F91A0AD30A2AC6B24022BAB1DDD627B38_AdjustorThunk },
-	{ 0x060003BD, CloudAnchorHistory__ctor_m38F84E7BD20BC2B7F9B2A33C3ACF2D689E2B6F0B_AdjustorThunk },
-	{ 0x060003BE, CloudAnchorHistory__ctor_m6B4D87030FDA4CF89594E2A95D0CDFD81EB8215C_AdjustorThunk },
-	{ 0x060003BF, CloudAnchorHistory_get_CreatedTime_m531C535F49696A343FF5259573F4CA65445A355C_AdjustorThunk },
-	{ 0x060003C0, CloudAnchorHistory_ToString_m3767E5AAAE2A03F6234E21D89DBE7C4D479FF4DA_AdjustorThunk },
+	{ 0x06000303, ThermalStateChange_get_previousThermalState_m19E75189B416E288F0818A9A007A7CFDFA94DFC4_AdjustorThunk },
+	{ 0x06000304, ThermalStateChange_get_currentThermalState_mE1A1FFF2945DB5ADAAB05D8F3B92DAE9A497204C_AdjustorThunk },
+	{ 0x06000305, ThermalStateChange__ctor_mBE6D0BD86B9E84BA65DECFA08E5C1F28E1DABB6B_AdjustorThunk },
+	{ 0x06000384, NamedPrefab__ctor_mE953E03F91A0AD30A2AC6B24022BAB1DDD627B38_AdjustorThunk },
+	{ 0x060003BF, CloudAnchorHistory__ctor_m38F84E7BD20BC2B7F9B2A33C3ACF2D689E2B6F0B_AdjustorThunk },
+	{ 0x060003C0, CloudAnchorHistory__ctor_m6B4D87030FDA4CF89594E2A95D0CDFD81EB8215C_AdjustorThunk },
+	{ 0x060003C1, CloudAnchorHistory_get_CreatedTime_m531C535F49696A343FF5259573F4CA65445A355C_AdjustorThunk },
+	{ 0x060003C2, CloudAnchorHistory_ToString_m3767E5AAAE2A03F6234E21D89DBE7C4D479FF4DA_AdjustorThunk },
 };
-static const int32_t s_InvokerIndices[1640] = 
+static const int32_t s_InvokerIndices[1642] = 
 {
 	-1,
 	-1,
@@ -3281,6 +3285,8 @@ static const int32_t s_InvokerIndices[1640] =
 	13020,
 	17254,
 	13176,
+	17050,
+	12981,
 	12981,
 	17265,
 	17265,
@@ -4639,75 +4645,75 @@ static const Il2CppTokenRangePair s_rgctxIndices[114] =
 	{ 0x0200010A, { 808, 6 } },
 	{ 0x0200010C, { 822, 5 } },
 	{ 0x0200010D, { 827, 5 } },
-	{ 0x0600018F, { 202, 5 } },
-	{ 0x06000190, { 207, 10 } },
-	{ 0x06000191, { 217, 9 } },
-	{ 0x06000327, { 292, 3 } },
-	{ 0x06000444, { 406, 3 } },
-	{ 0x06000452, { 409, 4 } },
-	{ 0x06000455, { 413, 4 } },
-	{ 0x06000458, { 417, 10 } },
-	{ 0x0600045B, { 427, 8 } },
-	{ 0x0600045E, { 435, 8 } },
-	{ 0x06000462, { 443, 8 } },
-	{ 0x0600046A, { 451, 7 } },
-	{ 0x060004AC, { 588, 19 } },
-	{ 0x060004AD, { 607, 14 } },
-	{ 0x060004AE, { 621, 17 } },
-	{ 0x0600050B, { 678, 4 } },
-	{ 0x0600050E, { 682, 4 } },
-	{ 0x06000511, { 686, 10 } },
-	{ 0x06000517, { 696, 8 } },
-	{ 0x0600051E, { 704, 8 } },
-	{ 0x06000525, { 712, 7 } },
-	{ 0x0600056B, { 754, 4 } },
-	{ 0x0600056C, { 758, 5 } },
-	{ 0x0600056D, { 763, 6 } },
-	{ 0x0600058A, { 790, 7 } },
-	{ 0x0600058B, { 797, 7 } },
-	{ 0x0600058C, { 804, 4 } },
-	{ 0x0600059A, { 814, 4 } },
-	{ 0x0600059B, { 818, 4 } },
-	{ 0x060005A7, { 832, 3 } },
-	{ 0x060005A8, { 835, 3 } },
-	{ 0x060005A9, { 838, 3 } },
-	{ 0x060005AA, { 841, 3 } },
-	{ 0x0600060F, { 844, 2 } },
-	{ 0x06000612, { 846, 2 } },
-	{ 0x06000613, { 848, 2 } },
-	{ 0x06000614, { 850, 2 } },
-	{ 0x06000615, { 852, 2 } },
-	{ 0x06000619, { 854, 2 } },
-	{ 0x0600061A, { 856, 2 } },
-	{ 0x0600061B, { 858, 2 } },
-	{ 0x0600061C, { 860, 2 } },
-	{ 0x0600061D, { 862, 2 } },
-	{ 0x0600061E, { 864, 2 } },
-	{ 0x06000622, { 866, 2 } },
-	{ 0x06000623, { 868, 2 } },
-	{ 0x06000624, { 870, 2 } },
-	{ 0x06000628, { 872, 2 } },
-	{ 0x06000629, { 874, 2 } },
-	{ 0x0600062A, { 876, 2 } },
-	{ 0x06000630, { 878, 7 } },
-	{ 0x06000633, { 885, 2 } },
-	{ 0x06000634, { 887, 7 } },
-	{ 0x06000635, { 894, 2 } },
-	{ 0x06000636, { 896, 7 } },
-	{ 0x0600063A, { 903, 2 } },
-	{ 0x0600063B, { 905, 2 } },
-	{ 0x0600063C, { 907, 7 } },
-	{ 0x0600063D, { 914, 2 } },
-	{ 0x0600063E, { 916, 2 } },
-	{ 0x0600063F, { 918, 7 } },
-	{ 0x06000643, { 925, 2 } },
-	{ 0x06000644, { 927, 2 } },
-	{ 0x06000645, { 929, 7 } },
-	{ 0x06000649, { 936, 2 } },
-	{ 0x0600064A, { 938, 2 } },
-	{ 0x0600064B, { 940, 7 } },
-	{ 0x06000650, { 947, 4 } },
-	{ 0x06000651, { 951, 3 } },
+	{ 0x06000191, { 202, 5 } },
+	{ 0x06000192, { 207, 10 } },
+	{ 0x06000193, { 217, 9 } },
+	{ 0x06000329, { 292, 3 } },
+	{ 0x06000446, { 406, 3 } },
+	{ 0x06000454, { 409, 4 } },
+	{ 0x06000457, { 413, 4 } },
+	{ 0x0600045A, { 417, 10 } },
+	{ 0x0600045D, { 427, 8 } },
+	{ 0x06000460, { 435, 8 } },
+	{ 0x06000464, { 443, 8 } },
+	{ 0x0600046C, { 451, 7 } },
+	{ 0x060004AE, { 588, 19 } },
+	{ 0x060004AF, { 607, 14 } },
+	{ 0x060004B0, { 621, 17 } },
+	{ 0x0600050D, { 678, 4 } },
+	{ 0x06000510, { 682, 4 } },
+	{ 0x06000513, { 686, 10 } },
+	{ 0x06000519, { 696, 8 } },
+	{ 0x06000520, { 704, 8 } },
+	{ 0x06000527, { 712, 7 } },
+	{ 0x0600056D, { 754, 4 } },
+	{ 0x0600056E, { 758, 5 } },
+	{ 0x0600056F, { 763, 6 } },
+	{ 0x0600058C, { 790, 7 } },
+	{ 0x0600058D, { 797, 7 } },
+	{ 0x0600058E, { 804, 4 } },
+	{ 0x0600059C, { 814, 4 } },
+	{ 0x0600059D, { 818, 4 } },
+	{ 0x060005A9, { 832, 3 } },
+	{ 0x060005AA, { 835, 3 } },
+	{ 0x060005AB, { 838, 3 } },
+	{ 0x060005AC, { 841, 3 } },
+	{ 0x06000611, { 844, 2 } },
+	{ 0x06000614, { 846, 2 } },
+	{ 0x06000615, { 848, 2 } },
+	{ 0x06000616, { 850, 2 } },
+	{ 0x06000617, { 852, 2 } },
+	{ 0x0600061B, { 854, 2 } },
+	{ 0x0600061C, { 856, 2 } },
+	{ 0x0600061D, { 858, 2 } },
+	{ 0x0600061E, { 860, 2 } },
+	{ 0x0600061F, { 862, 2 } },
+	{ 0x06000620, { 864, 2 } },
+	{ 0x06000624, { 866, 2 } },
+	{ 0x06000625, { 868, 2 } },
+	{ 0x06000626, { 870, 2 } },
+	{ 0x0600062A, { 872, 2 } },
+	{ 0x0600062B, { 874, 2 } },
+	{ 0x0600062C, { 876, 2 } },
+	{ 0x06000632, { 878, 7 } },
+	{ 0x06000635, { 885, 2 } },
+	{ 0x06000636, { 887, 7 } },
+	{ 0x06000637, { 894, 2 } },
+	{ 0x06000638, { 896, 7 } },
+	{ 0x0600063C, { 903, 2 } },
+	{ 0x0600063D, { 905, 2 } },
+	{ 0x0600063E, { 907, 7 } },
+	{ 0x0600063F, { 914, 2 } },
+	{ 0x06000640, { 916, 2 } },
+	{ 0x06000641, { 918, 7 } },
+	{ 0x06000645, { 925, 2 } },
+	{ 0x06000646, { 927, 2 } },
+	{ 0x06000647, { 929, 7 } },
+	{ 0x0600064B, { 936, 2 } },
+	{ 0x0600064C, { 938, 2 } },
+	{ 0x0600064D, { 940, 7 } },
+	{ 0x06000652, { 947, 4 } },
+	{ 0x06000653, { 951, 3 } },
 };
 extern const uint32_t g_rgctx_U3CU3Ef__AnonymousType0_10_tD15C3FA95ABF05613999C053E4CE61363896667F;
 extern const uint32_t g_rgctx_U3CossFileIdU3Ej__TPar_tA67A15A1F129A7352B1956996F1C2ABB1ECE7DD6;
@@ -6624,7 +6630,7 @@ IL2CPP_EXTERN_C const Il2CppCodeGenModule g_AssemblyU2DCSharp_CodeGenModule;
 const Il2CppCodeGenModule g_AssemblyU2DCSharp_CodeGenModule = 
 {
 	"Assembly-CSharp.dll",
-	1640,
+	1642,
 	s_methodPointers,
 	12,
 	s_adjustorThunks,

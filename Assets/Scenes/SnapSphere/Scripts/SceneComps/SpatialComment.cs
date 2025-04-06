@@ -27,14 +27,15 @@ public class SpatialComment : SpatialObject
     data["text"] = text;
     data["cloudAnchor"] = new Dictionary<string, object> { { "cloudAnchorId", cloudAnchorId } };
 
-    data["relPosition"] = new Dictionary<string, object> { 
-        { "type", "Point" },
-        { "coordinates", new float[] { transform.localPosition.x, transform.localPosition.z } }
-    };
-    data["relOrientation"] = new float[] { transform.localRotation.x, transform.localRotation.y, transform.localRotation.z, transform.localRotation.w };
-    data["relAltitude"] = transform.localPosition.y;
-    data["scale"] = new float[] { transform.localScale.x, transform.localScale.y, transform.localScale.z };
+    var (relPosition, relOrientation) = this.parentScene.api.ConvertToLocalTransform(this.transform, this.parentTransform);
 
+    data["relPosition"] = new Dictionary<string, object> {
+        { "type", "Point" },
+        { "coordinates", new float[] { relPosition.x, relPosition.z } }
+    };
+    data["relOrientation"] = new float[] { relOrientation.x, relOrientation.y, relOrientation.z, relOrientation.w };
+    data["relAltitude"] = relPosition.y;
+    // data["scale"] = new float[] { transform.localScale.x, transform.localScale.y, transform.localScale.z };
   }
 
   public static async Task<SpatialComment> CreateInstance(Dictionary<string, object> data)
@@ -100,6 +101,7 @@ public class SpatialComment : SpatialObject
     spatialComment.text = data["text"].ToString();
     Debug.Log($"SpatialComment text: {spatialComment.text}");
     spatialComment.UpdateHashCode();
+    spatialComment.parentTransform = anchorTransform;
     // Set parent to anchor transform
     instance.transform.parent = anchorTransform;
 

@@ -39,15 +39,32 @@ public class SSApi : MonoBehaviour
   {
     var tcs = new TaskCompletionSource<K>();
     Debug.Log($"Post to {ServerUrl + path}");
+    Debug.Log($"Post data: {JsonConvert.SerializeObject(data)}");
 
-    RestClient.Post(ServerUrl + path, JsonConvert.SerializeObject(data)).Then(response =>
+    var requestHelper = new RequestHelper
     {
-      tcs.SetResult(JsonConvert.DeserializeObject<K>(response.Text));
-    }).Catch(err =>
-    {
-      tcs.SetException(err);
-      Debug.LogError(err);
-    });
+      Uri = ServerUrl + path,
+      Method = "POST",
+      BodyString = JsonConvert.SerializeObject(data),
+      Headers = new Dictionary<string, string>
+      {
+        { "Content-Type", "application/json" }
+      },
+      Timeout = 3, // 3秒超时
+      EnableDebug = true
+    };
+
+    RestClient.Request(requestHelper)
+      .Then(response =>
+      {
+        Debug.Log($"Response from {path}: {response.Text}");
+        tcs.SetResult(JsonConvert.DeserializeObject<K>(response.Text));
+      })
+      .Catch(err =>
+      {
+        Debug.LogError($"Error posting to {path}: {err.Message}");
+        tcs.SetException(err);
+      });
 
     return await tcs.Task;
   }
@@ -457,10 +474,28 @@ public class SSApi : MonoBehaviour
 
   public async Task<Dictionary<string, object>> UpdateObject(string id, Dictionary<string, object> data)
   {
-    var response = await Post<Dictionary<string, object>, Dictionary<string, object>>($"/geo-object", new Dictionary<string, object>{
+    Debug.Log("!!!Updating object: " + id);
+    Debug.Log("!!!Data to update: " + JsonConvert.SerializeObject(data, new JsonSerializerSettings 
+    { 
+      ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+      NullValueHandling = NullValueHandling.Ignore
+    }));
+
+    var requestData = new Dictionary<string, object>
+    {
       {"id", id},
       {"data", data}
-    });
+    };
+
+    Debug.Log("!!!Request data: " + JsonConvert.SerializeObject(requestData, new JsonSerializerSettings 
+    { 
+      ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+      NullValueHandling = NullValueHandling.Ignore
+    }));
+
+    var response = await Post<Dictionary<string, object>, Dictionary<string, object>>($"/geo-object", requestData);
+    Debug.Log("!!!Updated object: " + id);
+    Debug.Log("!!!Response: " + JsonConvert.SerializeObject(response));
     return response;
   }
 

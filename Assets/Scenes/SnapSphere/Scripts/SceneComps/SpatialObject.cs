@@ -26,6 +26,21 @@ public abstract class SpatialObject : MonoBehaviour
   public Quaternion rotation { get { return instance.transform.localRotation; } set { instance.transform.localRotation = value; } }
   public Vector3 scale { get { return instance.transform.localScale; } set { instance.transform.localScale = value; } }
 
+  public Transform _parentTransform;
+  public Transform parentTransform
+  {
+    get
+    {
+      if (_parentTransform == null)
+      {
+        _parentTransform = instance.transform.parent;
+        Debug.Log("parentTransform is null, set to: " + _parentTransform.name);
+      }
+      return _parentTransform;
+    }
+    set { _parentTransform = value; }
+  }
+
   public void BindToAnchor(ARAnchor anchor)
   {
     instance.transform.SetParent(anchor.transform, false);
@@ -39,7 +54,7 @@ public abstract class SpatialObject : MonoBehaviour
     }
 
     // save all changes to the data
-    data["scale"] = scale;
+    // data["scale"] = new float[] { scale.x, scale.y, scale.z };
     Debug.Log("saved data base: ");
   }
 

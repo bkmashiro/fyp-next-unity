@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2608533695683866937}
   - component: {fileID: 7715417020035851747}
-  m_Layer: 0
+  - component: {fileID: 3703704938980782125}
+  m_Layer: 3
   m_Name: SpatialImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,6 +43,27 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6110070971613505031}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!65 &3703704938980782125
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6110070971613505031}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 0.1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8101163649752818815
 GameObject:
   m_ObjectHideFlags: 0
@@ -162,8 +184,7 @@ GameObject:
   - component: {fileID: 8905298450901467385}
   - component: {fileID: 8072825895930407}
   - component: {fileID: 4523781110995821753}
-  - component: {fileID: 5074416804222195190}
-  m_Layer: 3
+  m_Layer: 0
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -252,25 +273,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parentScene: {fileID: 0}
   id: 
+  _parentTransform: {fileID: 0}
   cloudAnchorId: 
---- !u!65 &5074416804222195190
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8778861164914608448}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 10, y: 0.5, z: 10}
-  m_Center: {x: 0, y: 0, z: 0}
