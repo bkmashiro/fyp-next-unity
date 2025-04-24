@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parentScene: {fileID: 0}
   id: 
+  _parentTransform: {fileID: 0}
   text: 
   cloudAnchorId: 
 --- !u!1 &5376793589512574799
@@ -276,7 +277,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2666059156514183547
 Transform:
   m_ObjectHideFlags: 0

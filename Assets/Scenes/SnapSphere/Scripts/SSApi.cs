@@ -294,11 +294,7 @@ public class SSApi : MonoBehaviour
 
   Vector3 ConvertToLocalPosition(Vector3 worldPos, Vector3 origin, Quaternion originRotation)
   {
-    // 计算相对位置
-    Vector3 relativePos = worldPos - origin;
-
-    // 将世界空间的相对位置转换到局部空间
-    return Quaternion.Inverse(originRotation) * relativePos;
+    return Quaternion.Inverse(originRotation) * (worldPos - origin);
   }
 
   public (Vector3, Quaternion) ConvertToLocalTransform(Transform target, Transform origin)
