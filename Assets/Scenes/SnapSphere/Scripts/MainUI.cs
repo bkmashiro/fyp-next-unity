@@ -338,20 +338,49 @@ public class MainUI : MonoBehaviour
 
     private void PerformHitTest(Vector2 touchPos)
     {
+        Debug.Log($"PerformHitTest called with touchPos: {touchPos}");
+        
         // if on an UI element, ignore
+        if (EventSystem.current == null)
+        {
+            Debug.LogError("EventSystem.current is null!");
+            return;
+        }
+        
         if (EventSystem.current.IsPointerOverGameObject())
         {
+            Debug.Log("Ignoring touch on UI element");
+            return;
+        }
+
+        if (GeospatialManager == null)
+        {
+            Debug.LogError("GeospatialManager is null!");
+            return;
+        }
+
+        if (GeospatialManager.RaycastManager == null)
+        {
+            Debug.LogError("GeospatialManager.RaycastManager is null!");
             return;
         }
 
         List<ARRaycastHit> hitResults = new();
+        Debug.Log("Performing raycast...");
         GeospatialManager.RaycastManager.Raycast(
             touchPos, hitResults, TrackableType.PlaneWithinPolygon);
+        Debug.Log($"Raycast hit {hitResults.Count} planes");
 
         // If there was an anchor placed, then instantiate the corresponding object.
         var planeType = PlaneAlignment.HorizontalUp;
         if (hitResults.Count > 0)
         {
+            if (GeospatialManager.PlaneManager == null)
+            {
+                Debug.LogError("GeospatialManager.PlaneManager is null!");
+                return;
+            }
+
             ARPlane plane = GeospatialManager.PlaneManager.GetPlane(hitResults[0].trackableId);
             if (plane == null)
             {
@@ -360,6 +389,7 @@ public class MainUI : MonoBehaviour
                 return;
             }
 
+            Debug.Log($"Found plane with alignment: {plane.alignment}");
             planeType = plane.alignment;
             var hitPose = hitResults[0].pose;
             if (Application.platform == RuntimePlatform.IPhonePlayer)
@@ -370,37 +400,72 @@ public class MainUI : MonoBehaviour
                     new Vector3(0.0f, GeospatialManager.MainCamera.transform.eulerAngles.y, 0.0f);
             }
 
+            if (GeospatialManager.AnchorManager == null)
+            {
+                Debug.LogError("GeospatialManager.AnchorManager is null!");
+                return;
+            }
+
+            Debug.Log("Attaching anchor to plane...");
             _anchor = GeospatialManager.AnchorManager.AttachAnchor(plane, hitPose);
+            Debug.Log($"Anchor created: {_anchor != null}");
         }
 
         if (_anchor != null)
         {
+            Debug.Log("Instantiating CloudAnchorPrefab...");
             Instantiate(CloudAnchorPrefab, _anchor.transform);
 
             // Attach map quality indicator to this anchor.
+            Debug.Log("Instantiating MapQualityIndicator...");
             var indicatorGO =
                 Instantiate(MapQualityIndicatorPrefab, _anchor.transform);
             qualityIndicator = indicatorGO.GetComponent<MapQualityIndicator>();
+            if (qualityIndicator == null)
+            {
+                Debug.LogError("Failed to get MapQualityIndicator component!");
+                return;
+            }
+
+            if (GeospatialManager.MainCamera == null)
+            {
+                Debug.LogError("GeospatialManager.MainCamera is null!");
+                return;
+            }
+
             qualityIndicator.DrawIndicator(planeType, GeospatialManager.MainCamera);
 
-            // InstructionText.text = " To save this location, walk around the object to " +
-            //     "capture it from different angles";
-            // DebugText.text = "Waiting for sufficient mapping quaility...";
-
-            // Hide plane generator so users can focus on the object they placed.
+            Debug.Log("Hosting cloud anchor...");
             GeospatialManager.HostCloudAnchor(_anchor, qualityIndicator);
-            // geoSpatialImage.anchor = _anchor;
             UpdatePlaneVisibility(false);
         }
 
         GeospatialManager.OnAnchorHosted.AddListener(async (anchorId) =>
             {
-                // geoSpatialImage.cloudAnchorId = anchorId;
-                Debug.Log($"Linked photo and anchor, cloudAnchorId: {geoSpatialImage.cloudAnchorId}");
+                Debug.Log($"Anchor hosted with ID: {anchorId}");
+                // if (geoSpatialImage == null)
+                // {
+                //     // Debug.LogError("geoSpatialImage is null!");
+                //     return;
+                // }
+
+                // if (geoSpatialImage.anchor == null)
+                // {
+                //     Debug.LogError("geoSpatialImage.anchor is null!");
+                //     return;
+                // }
+
+                // Debug.Log($"Linked photo and anchor, cloudAnchorId: {geoSpatialImage.cloudAnchorId}");
+                Debug.Log($"Adding resolved anchor with ID: {anchorId}");
                 CloudAnchorManager.AddResolvedAnchor(anchorId, _anchor, null);
-                // SSApi.Echo("Linked photo and anchor, cloudAnchorId: " + geoSpatialImage.cloudAnchorId);
-                var geoPosition = GeospatialManager.EarthManager.Convert(geoSpatialImage.anchor.pose);
-                await SSApi.CreateCloudAnchorRecord(geoSpatialImage.cloudAnchorId, new double[] { geoPosition.Longitude, geoPosition.Altitude, geoPosition.Latitude });
+                
+                Debug.Log($"Converting anchor pose to geospatial position");
+                var geoPosition = GeospatialManager.EarthManager.Convert(_anchor.pose);
+                Debug.Log($"Geospatial position - Longitude: {geoPosition.Longitude}, Latitude: {geoPosition.Latitude}, Altitude: {geoPosition.Altitude}");
+                
+                Debug.Log($"Creating cloud anchor record for image ID: {geoSpatialImage.cloudAnchorId}");
+                await SSApi.CreateCloudAnchorRecord(anchorId, new double[] { geoPosition.Longitude, geoPosition.Altitude, geoPosition.Latitude });
+                Debug.Log("Cloud anchor record created successfully");
             });
     }
 
