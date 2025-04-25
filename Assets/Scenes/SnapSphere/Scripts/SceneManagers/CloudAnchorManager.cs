@@ -97,8 +97,14 @@ public class CloudAnchorManager : MonoBehaviour
 
     // get all resolved anchors
     var resolvedAnchors = cloudAnchors.Values.Where(anchor => anchor.state == CloudAnchor.CloudAnchorState.Resolved).ToList();
+
+    if (resolvedAnchors.Count == 0)
+    {
+      return null;
+    }
+
     // get the closest anchor
-    return resolvedAnchors.OrderBy(anchor => Vector3.Distance(anchor.arAnchor.transform.position, position)).FirstOrDefault();
+    return resolvedAnchors.OrderBy(anchor => Vector3.Distance(anchor.GetTransform().position, position)).FirstOrDefault();
   }
 }
 
